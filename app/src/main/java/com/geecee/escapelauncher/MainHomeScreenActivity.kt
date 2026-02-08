@@ -24,6 +24,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -47,7 +48,10 @@ import com.geecee.escapelauncher.utils.getBooleanSetting
 import com.geecee.escapelauncher.utils.managers.ScreenTimeManager
 import com.geecee.escapelauncher.utils.managers.scheduleDailyCleanup
 import com.geecee.escapelauncher.utils.messagingInitializer
+import com.geecee.escapelauncher.utils.setStatusBarImmersive
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class MainHomeScreenActivity : ComponentActivity() {
@@ -107,7 +111,7 @@ class MainHomeScreenActivity : ComponentActivity() {
         // Set up the screen time tracking
         ScreenTimeManager.initialize(this)
         scheduleDailyCleanup(this)
-        
+
         // Efficient bulk load of screen time
         viewModel.reloadScreenTimeCache()
 
@@ -194,6 +198,9 @@ class MainHomeScreenActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
 
+        val isSticky = getBooleanSetting(this, this.getString(R.string.ScreenTimeOnHome))
+        this.setStatusBarImmersive(isSticky)
+
         // Check if we need to update screen time when coming back from an app
         if (viewModel.isAppOpened) {
             lifecycleScope.launch(Dispatchers.IO) {
@@ -249,6 +256,16 @@ class MainHomeScreenActivity : ComponentActivity() {
         }
     }
 
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+
+        if (intent.action == Intent.ACTION_MAIN && intent.hasCategory(Intent.CATEGORY_HOME)) {
+            AppUtils.resetHome(homeScreenModel)
+            viewModel.requestToGoHome()
+        }
+    }
+
     /**
      * Determines the start location for the NavHost
      *
@@ -280,6 +297,28 @@ class MainHomeScreenActivity : ComponentActivity() {
     @Composable
     private fun SetupNavHost(startDestination: String) {
         val navController = rememberNavController()
+
+        LaunchedEffect(viewModel.navigateHomeEvent) {
+            viewModel.navigateHomeEvent.collectLatest {
+                if (navController.currentDestination?.route != "home") {
+                    homeScreenModel.goToMainPage()
+                    homeScreenModel.appsListScrollState.scrollToItem(0)
+                    navController.navigate("home") {
+                        popUpTo(navController.graph.startDestinationId)
+                        launchSingleTop = true
+                    }
+                }
+                else {
+                    launch {
+                        homeScreenModel.animatedGoToMainPage()
+                    }
+                    launch {
+                        delay(550)
+                        homeScreenModel.appsListScrollState.scrollToItem(0)
+                    }
+                }
+            }
+        }
 
         Box(
             modifier = Modifier

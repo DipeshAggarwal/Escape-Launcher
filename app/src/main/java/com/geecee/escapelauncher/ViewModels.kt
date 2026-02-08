@@ -13,10 +13,12 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -29,9 +31,14 @@ import com.geecee.escapelauncher.utils.managers.ChallengesManager
 import com.geecee.escapelauncher.utils.managers.FavoriteAppsManager
 import com.geecee.escapelauncher.utils.managers.HiddenAppsManager
 import com.geecee.escapelauncher.utils.managers.getScreenTimeListSorted
+import com.geecee.escapelauncher.utils.managers.getSpacerSize
 import com.geecee.escapelauncher.utils.managers.getUsageForApp
+import com.geecee.escapelauncher.utils.managers.setSpacerSize
 import com.geecee.escapelauncher.utils.weatherProxy
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.Normalizer
@@ -42,7 +49,7 @@ import java.util.Locale
 /**
  * Home Screen View Model - Used for holding UI state for the home screen pages
  */
-class HomeScreenModel(application: Application, private val mainAppViewModel: MainAppViewModel) :
+class HomeScreenModel(application: Application, val mainAppViewModel: MainAppViewModel) :
     AndroidViewModel(application) {
     var currentSelectedApp = mutableStateOf(InstalledApp("", "", ComponentName("", "")))
     val isCurrentAppChallenged by derivedStateOf {
@@ -87,19 +94,19 @@ class HomeScreenModel(application: Application, private val mainAppViewModel: Ma
             val filtered = if (query.isBlank()) {
                 apps.filter { !mainAppViewModel.hiddenAppsManager.isAppHidden(it.packageName) }
             } else {
+                val regexUnaccentPattern = Regex("\\p{M}+")
                 apps.filter { app ->
                     val isHidden =
                         mainAppViewModel.hiddenAppsManager.isAppHidden(app.packageName)
                     val matchesQuery = AppUtils.fuzzyMatch(app.displayName, query)
                     matchesQuery && (!isHidden || showHiddenInSearch)
                 }.sortedWith(compareBy<InstalledApp> { app ->
-                    val regexUnaccent = "\\p{M}+"
                     val normalizedQuery = Normalizer.normalize(query, Normalizer.Form.NFD)
-                        .replace(Regex(regexUnaccent), "")
+                        .replace(regexUnaccentPattern, "")
                         .lowercase()
 
                     val normalizedName = Normalizer.normalize(app.displayName, Normalizer.Form.NFD)
-                        .replace(Regex(regexUnaccent), "")
+                        .replace(regexUnaccentPattern, "")
                         .lowercase()
 
                     when {
@@ -145,36 +152,34 @@ class HomeScreenModel(application: Application, private val mainAppViewModel: Ma
         }
     }
 
+    private fun getMainPageIndex(): Int {
+        val hideScreenTime = getBooleanSetting(
+            context = mainAppViewModel.getContext(),
+            setting = mainAppViewModel.getContext().resources.getString(R.string.hideScreenTimePage),
+            defaultValue = false
+        )
+        return if (hideScreenTime) 0 else 1
+    }
+
     suspend fun goToMainPage() {
-        if (getBooleanSetting(
-                context = mainAppViewModel.getContext(),
-                setting = mainAppViewModel.getContext().resources.getString(R.string.hideScreenTimePage),
-                defaultValue = false
-            )
-        ) {
-            pagerState.scrollToPage(0)
-        } else {
-            pagerState.scrollToPage(1)
-        }
+        pagerState.scrollToPage(getMainPageIndex())
     }
 
     suspend fun animatedGoToMainPage() {
-        if (getBooleanSetting(
-                context = mainAppViewModel.getContext(),
-                setting = mainAppViewModel.getContext().resources.getString(R.string.hideScreenTimePage),
-                defaultValue = false
-            )
-        ) {
-            pagerState.animateScrollToPage(
-                0,
-                animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing)
-            )
-        } else {
-            pagerState.animateScrollToPage(
-                1,
-                animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing)
-            )
+        val targetPage = getMainPageIndex()
+
+        if (pagerState.currentPage == targetPage && pagerState.currentPageOffsetFraction == 0f) {
+            return
         }
+
+        if (pagerState.isScrollInProgress && pagerState.targetPage == targetPage) {
+            return
+        }
+
+        pagerState.animateScrollToPage(
+            targetPage,
+            animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing)
+        )
     }
 
     val currentSelectedPrivateApp =
@@ -269,6 +274,27 @@ class HomeScreenModelFactory(
  */
 class MainAppViewModel(application: Application) : AndroidViewModel(application) {
     private val appContext: Context = application.applicationContext // The app context
+
+    private val _navigateHomeEvent = MutableSharedFlow<Unit>(
+        replay = 0,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST,
+        extraBufferCapacity = 1
+    )
+    val navigateHomeEvent = _navigateHomeEvent.asSharedFlow()
+
+    fun requestToGoHome() {
+        viewModelScope.launch {
+            _navigateHomeEvent.emit(Unit)
+        }
+    }
+
+    var spacerSize by mutableFloatStateOf(getSpacerSize(getApplication()))
+        private set
+
+    fun updateSpacerSize(context: Context, size: Float) {
+        spacerSize = size
+        setSpacerSize(context, size)
+    }
 
     fun getContext(): Context = appContext // Returns the context
 
@@ -387,7 +413,8 @@ class MainAppViewModel(application: Application) : AndroidViewModel(application)
 
     fun updateWeather() {
         val currentTime = System.currentTimeMillis()
-        val useFahrenheit = getBooleanSetting(appContext, appContext.getString(R.string.UseFahrenheit))
+        val useFahrenheit =
+            getBooleanSetting(appContext, appContext.getString(R.string.UseFahrenheit))
         // Update weather if it's been more than 30 minutes or if it's empty
         if (currentTime - lastWeatherUpdate > 30 * 60 * 1000 || weatherText.value.isEmpty()) {
             viewModelScope.launch(Dispatchers.IO) {
@@ -407,7 +434,8 @@ class MainAppViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun forceUpdateWeather() {
-        val useFahrenheit = getBooleanSetting(appContext, appContext.getString(R.string.UseFahrenheit))
+        val useFahrenheit =
+            getBooleanSetting(appContext, appContext.getString(R.string.UseFahrenheit))
         viewModelScope.launch(Dispatchers.IO) {
             weatherProxy.getWeather(appContext, useFahrenheit) { result ->
                 viewModelScope.launch(Dispatchers.Main) {
