@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.compose.compiler)
     id("com.google.devtools.ksp")
+    id("com.google.dagger.hilt.android")
 }
 
 val baseVersionCode = "2.3.1"
@@ -11,6 +12,10 @@ val baseVersionCode = "2.3.1"
 android {
     namespace = "com.geecee.escapelauncher"
     compileSdk = 36
+
+    lint {
+        baseline = file("lint-baseline.xml")
+    }
 
     defaultConfig {
         applicationId = "com.geecee.escapelauncher"
@@ -84,18 +89,14 @@ android {
     }
     
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     buildFeatures {
         compose = true
         buildConfig = true
         resValues = true
-    }
-    @Suppress("UnstableApiUsage")
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
     }
     packaging {
         resources {
@@ -106,7 +107,7 @@ android {
 
 kotlin {
     compilerOptions {
-        jvmTarget = JvmTarget.JVM_1_8
+        jvmTarget = JvmTarget.JVM_17
         freeCompilerArgs = listOf("-XXLanguage:+PropertyParamAnnotationDefaultTargetMode")
     }
 }
@@ -125,46 +126,45 @@ dependencies {
     implementation(libs.androidx.core.splashscreen)
 
     // Material Design and UI Libraries
-    implementation(libs.material)
+    implementation(libs.google.material)
     implementation(libs.androidx.compose.material3)
     implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.graphics)
+    implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.graphics.shapes)
     implementation(libs.androidx.compose.material.icons.core)
     implementation(libs.androidx.compose.material.icons.extended)
 
 
     // Lifecycle and Activity Libraries
-    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.runtime)
     implementation(libs.androidx.activity.compose)
 
     // Navigation
     implementation(libs.androidx.navigation.compose)
 
-    // Room Database
-    implementation(libs.androidx.room.common)
-    implementation(libs.androidx.room.ktx)
-    implementation(libs.androidx.room.runtime)
-    ksp(libs.androidx.room.compiler)
-
-    // WorkManager
-    implementation(libs.androidx.work.runtime.ktx)
-
-    // JSON Parsing
-    implementation(libs.gson)
+    // Hilt
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
 
     // Testing Libraries
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
+    androidTestImplementation(libs.androidx.compose.ui.test.junit)
 
     // Debugging Tools
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
+    debugImplementation(libs.androidx.compose.ui.tooling)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
+
+    // TEMPORARY MIGRATION DEPENDENCIES
+    implementation(libs.google.gson)
+    implementation(libs.androidx.work.runtime)
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
 }
 
 java {
@@ -175,6 +175,6 @@ java {
 
 tasks.register("testClasses") {
     group = "verification"
-    description = "Test claasses for all variants."
+    description = "Test classes for all variants."
     dependsOn(
         tasks.matching { it.name.startsWith("compile") && it.name.endsWith("UnitTestSources") } )}

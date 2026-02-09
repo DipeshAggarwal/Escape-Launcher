@@ -1,25 +1,47 @@
+# Built application files
+*.apk
+*.ap_
+*.aab
+
+# Files for the ART/Dalvik VM
+*.dex
+
+# Java class files
+*.class
+
+# Generated files
+bin/
+gen/
+out/
+release/
+
+# Gradle files
+.gradle/
+**/build/
+**/outputs/
+
+# Local configuration file
+local.properties
+
+# Android Studio specific files
 *.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
+.idea/
+**/.idea/
 .DS_Store
-/build
-/captures
+
+# External native build
 .externalNativeBuild
 .cxx
-local.properties
+
+# Version control
+.svn
+
+# Google Services
 google-services.json
-/.fleet
-.vs
-/.idea/
-app/.idea/
-app/prod/release/app-prod-release.apk
-app/prod/release/output-metadata.json
-app/prod/release/baselineProfiles/0/app-prod-release.dm
-app/prod/release/baselineProfiles/1/app-prod-release.dm
+
+# Other
+/captures
+*.log
 /crash-reports
+.vs
+/.fleet

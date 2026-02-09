@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<issues format="6" by="lint 9.0.0" type="baseline" client="gradle" dependencies="false" name="AGP (9.0.0)" variant="all" version="9.0.0">
+
+    <issue
+        id="MissingTranslation"
+        message="&quot;use_farenhight&quot; is not translated in &quot;it&quot; (Italian) or &quot;es&quot; (Spanish)"
+        errorLine1="    &lt;string name=&quot;use_farenhight&quot;>Use fahrenheit&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="94"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="MissingTranslation"
+        message="&quot;set_app_countdown_time&quot; is not translated in &quot;it&quot; (Italian) or &quot;es&quot; (Spanish)"
+        errorLine1="    &lt;string name=&quot;set_app_countdown_time&quot;>Set App Countdown Time&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="95"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="MissingTranslation"
+        message="&quot;set_app_countdown_time_long&quot; is not translated in &quot;it&quot; (Italian) or &quot;es&quot; (Spanish)"
+        errorLine1="    &lt;string name=&quot;set_app_countdown_time_long&quot;>Long Time&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="96"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="MissingTranslation"
+        message="&quot;set_app_countdown_time_normal&quot; is not translated in &quot;it&quot; (Italian) or &quot;es&quot; (Spanish)"
+        errorLine1="    &lt;string name=&quot;set_app_countdown_time_normal&quot;>Normal Time&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="97"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="MissingTranslation"
+        message="&quot;set_app_countdown_time_short&quot; is not translated in &quot;it&quot; (Italian) or &quot;es&quot; (Spanish)"
+        errorLine1="    &lt;string name=&quot;set_app_countdown_time_short&quot;>Short Time&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="98"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="MissingTranslation"
+        message="&quot;set_app_countdown_time_slider&quot; is not translated in &quot;it&quot; (Italian) or &quot;es&quot; (Spanish)"
+        errorLine1="    &lt;string name=&quot;set_app_countdown_time_slider&quot;>Change Time&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="99"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="MissingTranslation"
+        message="&quot;custom_settings&quot; is not translated in &quot;it&quot; (Italian) or &quot;es&quot; (Spanish)"
+        errorLine1="    &lt;string name=&quot;custom_settings&quot;>Custom Settings&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="100"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="MissingTranslation"
+        message="&quot;countdown_time_title&quot; is not translated in &quot;it&quot; (Italian) or &quot;es&quot; (Spanish)"
+        errorLine1="    &lt;string name=&quot;countdown_time_title&quot;>Countdown Time&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="101"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="MissingTranslation"
+        message="&quot;show_status_bar&quot; is not translated in &quot;it&quot; (Italian) or &quot;es&quot; (Spanish)"
+        errorLine1="    &lt;string name=&quot;show_status_bar&quot;>Show Status Bar&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="102"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="MissingTranslation"
+        message="&quot;set_spacer_size&quot; is not translated in &quot;it&quot; (Italian) or &quot;es&quot; (Spanish)"
+        errorLine1="    &lt;string name=&quot;set_spacer_size&quot;>Set Spacer Size&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="103"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="MissingTranslation"
+        message="&quot;set_spacer_size_compact&quot; is not translated in &quot;it&quot; (Italian) or &quot;es&quot; (Spanish)"
+        errorLine1="    &lt;string name=&quot;set_spacer_size_compact&quot;>Compact&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="104"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="MissingTranslation"
+        message="&quot;set_spacer_size_standard&quot; is not translated in &quot;it&quot; (Italian) or &quot;es&quot; (Spanish)"
+        errorLine1="    &lt;string name=&quot;set_spacer_size_standard&quot;>Standard&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="105"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="MissingTranslation"
+        message="&quot;set_spacer_size_relaxed&quot; is not translated in &quot;it&quot; (Italian) or &quot;es&quot; (Spanish)"
+        errorLine1="    &lt;string name=&quot;set_spacer_size_relaxed&quot;>Relaxed&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="106"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="MissingTranslation"
+        message="&quot;set_spacer_size_slider&quot; is not translated in &quot;it&quot; (Italian) or &quot;es&quot; (Spanish)"
+        errorLine1="    &lt;string name=&quot;set_spacer_size_slider&quot;>Change Spacing&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="107"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;app_name&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;app_name&quot;>Escape Launcher&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-es/strings.xml"
+            line="3"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 26"
+        errorLine1="        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/geecee/escapelauncher/utils/managers/Migration.kt"
+            line="79"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.empty` appears to be unused">
+        <location
+            file="build.gradle.kts"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.empty` appears to be unused">
+        <location
+            file="build.gradle.kts"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.empty` appears to be unused">
+        <location
+            file="build.gradle.kts"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.mipmap.ic_launcher_background` appears to be unused">
+        <location
+            file="src/main/res/mipmap-hdpi/ic_launcher_background.webp"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.mipmap.ic_launcher_round` appears to be unused">
+        <location
+            file="src/main/res/mipmap-hdpi/ic_launcher_round.webp"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.notification_icon` appears to be unused">
+        <location
+            file="src/main/res/drawable-hdpi/notification_icon.png"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.ShowStatusBar` appears to be unused"
+        errorLine1="    &lt;string name=&quot;ShowStatusBar&quot; translatable=&quot;false&quot;>ShowStatusBar&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/sharedPrefs.xml"
+            line="31"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="IconXmlAndPng"
+        message="The following images appear both as density independent `.xml` files and as bitmap files: src\main\res\mipmap-anydpi\ic_launcher.xml, src\main\res\mipmap-hdpi\ic_launcher.webp">
+        <location
+            file="src/main/res/mipmap-xxxhdpi/ic_launcher.webp"/>
+        <location
+            file="src/main/res/mipmap-xxhdpi/ic_launcher.webp"/>
+        <location
+            file="src/main/res/mipmap-xhdpi/ic_launcher.webp"/>
+        <location
+            file="src/main/res/mipmap-mdpi/ic_launcher.webp"/>
+        <location
+            file="src/main/res/mipmap-hdpi/ic_launcher.webp"/>
+        <location
+            file="src/main/res/mipmap-anydpi/ic_launcher.xml"/>
+    </issue>
+
+    <issue
+        id="IconXmlAndPng"
+        message="The following images appear both as density independent `.xml` files and as bitmap files: src\main\res\mipmap-anydpi\ic_launcher_round.xml, src\main\res\mipmap-hdpi\ic_launcher_round.webp">
+        <location
+            file="src/main/res/mipmap-xxxhdpi/ic_launcher_round.webp"/>
+        <location
+            file="src/main/res/mipmap-xxhdpi/ic_launcher_round.webp"/>
+        <location
+            file="src/main/res/mipmap-xhdpi/ic_launcher_round.webp"/>
+        <location
+            file="src/main/res/mipmap-mdpi/ic_launcher_round.webp"/>
+        <location
+            file="src/main/res/mipmap-hdpi/ic_launcher_round.webp"/>
+        <location
+            file="src/main/res/mipmap-anydpi/ic_launcher_round.xml"/>
+    </issue>
+
+    <issue
+        id="IconXmlAndPng"
+        message="The following images appear both as density independent `.xml` files and as bitmap files: src\main\res\drawable-anydpi\notification_icon.xml, src\main\res\drawable-hdpi\notification_icon.png">
+        <location
+            file="src/main/res/drawable-xxhdpi/notification_icon.png"/>
+        <location
+            file="src/main/res/drawable-xhdpi/notification_icon.png"/>
+        <location
+            file="src/main/res/drawable-mdpi/notification_icon.png"/>
+        <location
+            file="src/main/res/drawable-hdpi/notification_icon.png"/>
+        <location
+            file="src/main/res/drawable-anydpi/notification_icon.xml"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `SharedPreferences.edit` instead?"
+        errorLine1="                    oldPrefs.edit().clear().apply()"
+        errorLine2="                    ~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/geecee/escapelauncher/utils/managers/Migration.kt"
+            line="61"
+            column="21"/>
+    </issue>
+
+</issues>
