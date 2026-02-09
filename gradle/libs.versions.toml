@@ -15,15 +15,25 @@ composeBom = "2026.01.01"
 
 room = "2.8.4"
 
-hilt = "2.59"
+hilt = "2.59.1"
+ksp = "2.3.5"
 
 junit = "4.13.2"
 junitVersion = "1.3.0"
 espressoCore = "3.7.0"
 
 gson = "2.13.2"
+okhttp = "5.3.2"
 coreSplashscreen = "1.2.0"
 graphicsShapes = "1.1.0"
+
+firebase-bom = "34.9.0"
+firebase-messaging = "25.0.1"
+crashlytics-gradle = "3.0.6"
+
+google-services = "4.4.4"
+play-services-location = "21.3.0"
+google-fonts-compose = "1.10.2"
 
 [libraries]
 # Gradle
@@ -55,6 +65,8 @@ androidx-compose-material3 = { module = "androidx.compose.material3:material3" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 
+compose-google-fonts = { module = "androidx.compose.ui:ui-text-google-fonts", version.ref = "google-fonts-compose" }
+
 # Hilt
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
@@ -72,10 +84,22 @@ junit = { module = "junit:junit", version.ref = "junit" }
 androidx-junit = { module = "androidx.test.ext:junit", version.ref = "junitVersion" }
 androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espressoCore" }
 
+# Firebase
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
+firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
+firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
+firebase-perf = { module = "com.google.firebase:firebase-perf" }
+firebase-messaging = { module = "com.google.firebase:firebase-messaging", version.ref = "firebase-messaging" }
+firebase-crashlytics-gradle = { module = "com.google.firebase:firebase-crashlytics-gradle", version.ref = "crashlytics-gradle" }
+google-services-gradle = { module = "com.google.gms:google-services", version.ref = "google-services" }
+
 # Misc
 google-gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "play-services-location" }
+okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }

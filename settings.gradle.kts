@@ -22,7 +22,7 @@ pluginManagement {
         id("org.jetbrains.kotlin.android") version "2.3.10"
         id("org.jetbrains.kotlin.jvm") version "2.3.10"
         id("org.jetbrains.kotlin.plugin.compose") version "2.3.10"
-        id("com.google.dagger.hilt.android") version "2.59"
+        id("com.google.dagger.hilt.android") version "2.59.1"
     }
 }
 
