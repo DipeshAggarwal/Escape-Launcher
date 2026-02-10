@@ -46,6 +46,7 @@ include(":app")
 include(":core:core-android")
 include(":core:core-common")
 include(":core:core-datastore")
+include(":core:core-logging")
 include(":core:core-testing")
 include(":core:core-ui")
 
