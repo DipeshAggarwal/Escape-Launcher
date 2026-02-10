@@ -1,8 +1,9 @@
 package com.lumina.core.logging
 
 import android.util.Log
+import javax.inject.Inject
 
-class AndroidLogger: Logger {
+class AndroidLogger @Inject constructor(): Logger {
     override fun d(tag: String, message: String, throwable: Throwable?) {
         if (throwable != null) {
             Log.d(tag, message, throwable)
