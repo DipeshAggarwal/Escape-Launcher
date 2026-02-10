@@ -101,6 +101,7 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "/META-INF/gradle/incremental.annotation.processors"
         }
     }
 }
@@ -121,8 +122,13 @@ if (!isFoss) {
 
 dependencies {
     implementation(project(":core:core-common"))
-    implementation(project(":core:core-ui"))
+    implementation(project(":core:core-datastore"))
     implementation(project(":core:core-logging"))
+    implementation(project(":core:core-ui"))
+
+    implementation(project(":data:data-apps"))
+
+    implementation(project(":features:features-apphiding"))
 
     // Core Android Libraries
     implementation(libs.androidx.core.ktx)
@@ -153,6 +159,7 @@ dependencies {
     // Hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
+    ksp(libs.androidx.hilt.navigation.compose)
 
     // Testing Libraries
     testImplementation(libs.junit)

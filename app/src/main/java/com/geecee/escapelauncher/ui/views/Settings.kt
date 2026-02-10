@@ -128,6 +128,9 @@ import com.geecee.escapelauncher.utils.showLauncherSelector
 import com.geecee.escapelauncher.utils.showLauncherSettingsMenu
 import com.geecee.escapelauncher.utils.toggleBooleanSetting
 import com.lumina.core.common.AppDefaults.DEFAULT_THEME
+import com.lumina.core.common.FeatureFlags.USE_NEW_APP_HIDING
+import com.lumina.feature.apphiding.ui.APP_HIDING_ROUTE
+import com.lumina.feature.apphiding.ui.appHidingNavigation
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import toStorageValue
@@ -275,6 +278,7 @@ fun Settings(
                         mainAppModel.notifyHiddenAppsChanged()
                     })
             }
+            appHidingNavigation { navController.popBackStack() }
             composable(
                 "bulkFavouriteApps",
                 enterTransition = { fadeIn(tween(300)) },
@@ -736,7 +740,14 @@ fun MainSettingsPage(
                 label = stringResource(id = R.string.manage_hidden_apps),
                 false,
                 isTopOfGroup = true,
-                onClick = { navController.navigate("hiddenApps") })
+                onClick = {
+                    if (USE_NEW_APP_HIDING) {
+                        navController.navigate(APP_HIDING_ROUTE)
+                    } else {
+                        navController.navigate("hiddenApps")
+                    }
+                }
+            )
         }
 
         item {

@@ -5,6 +5,7 @@ plugins {
 }
 
 dependencies {
+    implementation(libs.androidx.datastore.preferences)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
