@@ -63,6 +63,7 @@ include(":data:data-screentime")
 include(":data:data-settings")
 
 // features module
+include(":features:features-apphiding")
 include(":features:features-home")
 include(":features:features-onboarding")
 include(":features:features-screentime")

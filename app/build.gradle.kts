@@ -126,8 +126,10 @@ dependencies {
 
     // Core Android Libraries
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.core.splashscreen)
+    implementation(libs.kotlinx.coroutines.core)
 
     // Material Design and UI Libraries
     implementation(libs.google.material)
