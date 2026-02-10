@@ -88,13 +88,13 @@ import androidx.compose.ui.unit.sp
 import com.geecee.escapelauncher.HomeScreenModel
 import com.geecee.escapelauncher.MainAppViewModel
 import com.geecee.escapelauncher.R
-import com.geecee.escapelauncher.ui.theme.BackgroundColor
-import com.geecee.escapelauncher.ui.theme.CardContainerColor
-import com.geecee.escapelauncher.ui.theme.CardContainerColorDisabled
-import com.geecee.escapelauncher.ui.theme.ContentColor
-import com.geecee.escapelauncher.ui.theme.ContentColorDisabled
-import com.geecee.escapelauncher.ui.theme.SecondaryCardContainerColor
-import com.geecee.escapelauncher.ui.theme.primaryContentColor
+import com.lumina.core.ui.theme.BackgroundColor
+import com.lumina.core.ui.theme.CardContainerColor
+import com.lumina.core.ui.theme.CardContainerColorDisabled
+import com.lumina.core.ui.theme.ContentColor
+import com.lumina.core.ui.theme.ContentColorDisabled
+import com.lumina.core.ui.theme.SecondaryCardContainerColor
+import com.lumina.core.ui.theme.primaryContentColor
 import com.geecee.escapelauncher.utils.AppUtils.formatScreenTime
 import com.geecee.escapelauncher.utils.AppUtils.getCurrentTime
 import com.geecee.escapelauncher.utils.AppUtils.resetHome
@@ -346,22 +346,23 @@ fun Weather(
                     val weatherAppPackage = getStringSetting(
                         context,
                         mainAppModel.getContext().getString(R.string.weather_app_package),
-                        ""
+                        null
                     )
-                    if (weatherAppPackage.isNotEmpty()) {
-                        val launchIntent =
-                            context.packageManager.getLaunchIntentForPackage(weatherAppPackage)
-                        launchIntent?.let {
-                            it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                            context.startActivity(it)
-                        }
-                    } else {
+
+                    if (weatherAppPackage.isNullOrBlank()) {
                         Toast.makeText(
                             context,
                             mainAppModel.getContext()
                                 .getString(R.string.set_weather_app_in_settings),
                             Toast.LENGTH_SHORT
                         ).show()
+                    } else {
+                        val launchIntent =
+                            context.packageManager.getLaunchIntentForPackage(weatherAppPackage)
+                        launchIntent?.let {
+                            it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            context.startActivity(it)
+                        }
                     }
                 },
                 textAlign = when (homeAlignment) {

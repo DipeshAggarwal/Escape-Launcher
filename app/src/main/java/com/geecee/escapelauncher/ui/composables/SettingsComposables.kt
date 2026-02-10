@@ -79,18 +79,20 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.isUnspecified
 import androidx.compose.ui.unit.sp
+import appThemeFromStorage
 import com.geecee.escapelauncher.R
-import com.geecee.escapelauncher.ui.theme.AppTheme
-import com.geecee.escapelauncher.ui.theme.CardContainerColor
-import com.geecee.escapelauncher.ui.theme.CardContainerColorDisabled
-import com.geecee.escapelauncher.ui.theme.ContentColor
-import com.geecee.escapelauncher.ui.theme.ContentColorDisabled
-import com.geecee.escapelauncher.ui.theme.ErrorContainerColor
-import com.geecee.escapelauncher.ui.theme.ErrorContentColor
-import com.geecee.escapelauncher.ui.theme.primaryContentColor
-import com.geecee.escapelauncher.ui.theme.resolveColorScheme
-import com.geecee.escapelauncher.ui.theme.transparentHalf
+import com.lumina.core.ui.theme.AppTheme
+import com.lumina.core.ui.theme.CardContainerColor
+import com.lumina.core.ui.theme.CardContainerColorDisabled
+import com.lumina.core.ui.theme.ContentColor
+import com.lumina.core.ui.theme.ContentColorDisabled
+import com.lumina.core.ui.theme.ErrorContainerColor
+import com.lumina.core.ui.theme.ErrorContentColor
+import com.lumina.core.ui.theme.primaryContentColor
+import com.lumina.core.ui.theme.resolveColorScheme
+import com.lumina.core.ui.theme.transparentHalf
 import com.geecee.escapelauncher.utils.InstalledApp
+import displayNameRes
 
 @Composable
 fun AutoResizingText(
@@ -609,19 +611,19 @@ fun SettingsSwipeableButton(
  *
  * @param theme The theme ID number (see: Theme.kt)
  *
- * @see com.geecee.escapelauncher.ui.theme.EscapeTheme
+ * @see com.lumina.core.ui.theme.EscapeTheme
  */
 @Composable
 fun ThemeCard(
-    theme: Int,
+    theme: AppTheme,
     showLightDarkPicker: MutableState<Boolean>,
     isSelected: MutableState<Boolean>,
     isDSelected: MutableState<Boolean>,
     isLSelected: MutableState<Boolean>,
-    updateLTheme: (Int) -> Unit,
-    updateDTheme: (Int) -> Unit,
+    updateLTheme: (AppTheme) -> Unit,
+    updateDTheme: (AppTheme) -> Unit,
     modifier: Modifier,
-    onClick: (Int) -> Unit,
+    onClick: (AppTheme) -> Unit,
     isTopOfGroup: Boolean = false,
     isBottomOfGroup: Boolean = false
 ) {
@@ -647,7 +649,7 @@ fun ThemeCard(
                 .clickable {
                     onClick(theme)
                 }
-                .background(AppTheme.fromId(theme).resolveColorScheme().background)
+                .background(theme.resolveColorScheme().background)
                 .height(72.dp)) {
             AnimatedVisibility(
                 isSelected.value && !showLightDarkPicker.value && !showLightDarkPicker.value,
@@ -659,7 +661,7 @@ fun ThemeCard(
                         .fillMaxSize()
                         .border(
                             2.dp,
-                            AppTheme.fromId(theme).resolveColorScheme().onPrimaryContainer,
+                            theme.resolveColorScheme().onPrimaryContainer,
                             RoundedCornerShape(
                                 topStart = topStartRadius,
                                 topEnd = topEndRadius,
@@ -676,7 +678,7 @@ fun ThemeCard(
                         Icon(
                             Icons.Default.CheckCircle,
                             "",
-                            tint = AppTheme.fromId(theme).resolveColorScheme().onPrimaryContainer
+                            tint = theme.resolveColorScheme().onPrimaryContainer
                         )
                     }
                 }
@@ -690,7 +692,7 @@ fun ThemeCard(
                         .fillMaxSize()
                         .border(
                             2.dp,
-                            AppTheme.fromId(theme).resolveColorScheme().onPrimaryContainer,
+                            theme.resolveColorScheme().onPrimaryContainer,
                             RoundedCornerShape(
                                 topStart = topStartRadius,
                                 topEnd = topEndRadius,
@@ -707,7 +709,7 @@ fun ThemeCard(
                         Icon(
                             Icons.Default.CheckCircle,
                             "",
-                            tint = AppTheme.fromId(theme).resolveColorScheme().onPrimaryContainer
+                            tint = theme.resolveColorScheme().onPrimaryContainer
                         )
                     }
                 }
@@ -721,7 +723,7 @@ fun ThemeCard(
                         .fillMaxSize()
                         .border(
                             2.dp,
-                            AppTheme.fromId(theme).resolveColorScheme().onPrimaryContainer,
+                            theme.resolveColorScheme().onPrimaryContainer,
                             RoundedCornerShape(
                                 topStart = topStartRadius,
                                 topEnd = topEndRadius,
@@ -738,18 +740,18 @@ fun ThemeCard(
                         Icon(
                             painterResource(R.drawable.dark_mode),
                             "",
-                            tint = AppTheme.fromId(theme).resolveColorScheme().onPrimaryContainer
+                            tint = theme.resolveColorScheme().onPrimaryContainer
                         )
                     }
                 }
             }
 
             Text(
-                stringResource(AppTheme.nameResFromId(theme)),
+                stringResource(theme.displayNameRes()),
                 Modifier
                     .align(Alignment.Center)
                     .padding(horizontal = 24.dp, vertical = 12.dp),
-                AppTheme.fromId(theme).resolveColorScheme().onPrimaryContainer,
+                theme.resolveColorScheme().onPrimaryContainer,
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center
             )
@@ -762,7 +764,7 @@ fun ThemeCard(
                         .fillMaxSize()
                         .border(
                             2.dp,
-                            AppTheme.fromId(theme).resolveColorScheme().onPrimaryContainer,
+                            theme.resolveColorScheme().onPrimaryContainer,
                             RoundedCornerShape(
                                 topStart = topStartRadius,
                                 topEnd = topEndRadius,
@@ -779,7 +781,7 @@ fun ThemeCard(
                         Icon(
                             painterResource(R.drawable.light_mode),
                             "",
-                            tint = AppTheme.fromId(theme).resolveColorScheme().onPrimaryContainer
+                            tint = theme.resolveColorScheme().onPrimaryContainer
                         )
                     }
                 }
@@ -800,8 +802,8 @@ fun ThemeCard(
                             .fillMaxHeight()
                             .padding(20.dp, 5.dp, 5.dp, 5.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = AppTheme.fromId(theme).resolveColorScheme().primary,
-                            contentColor = AppTheme.fromId(theme).resolveColorScheme().onPrimary
+                            containerColor = theme.resolveColorScheme().primary,
+                            contentColor = theme.resolveColorScheme().onPrimary
                         )
                     ) {
                         Text(stringResource(R.string.light))
@@ -816,8 +818,8 @@ fun ThemeCard(
                             .fillMaxHeight()
                             .padding(5.dp, 5.dp, 20.dp, 5.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = AppTheme.fromId(theme).resolveColorScheme().primary,
-                            contentColor = AppTheme.fromId(theme).resolveColorScheme().onPrimary
+                            containerColor = theme.resolveColorScheme().primary,
+                            contentColor = theme.resolveColorScheme().onPrimary
                         )
                     ) {
                         Text(stringResource(R.string.dark))

@@ -17,6 +17,7 @@ import android.util.Log
 import android.view.Window
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalConfiguration
@@ -26,15 +27,20 @@ import androidx.core.graphics.createBitmap
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import appThemeFromStorage
 import com.geecee.escapelauncher.HomeScreenModel
 import com.geecee.escapelauncher.R
-import com.geecee.escapelauncher.ui.theme.AppTheme
-import com.geecee.escapelauncher.ui.theme.EscapeTheme
+import com.geecee.escapelauncher.ui.theme.getFontFamily
+import com.lumina.core.ui.theme.EscapeTheme
 import com.geecee.escapelauncher.utils.managers.ScreenTimeManager
+import com.lumina.core.common.AppDefaults.DEFAULT_FONT
+import com.lumina.core.common.AppDefaults.DEFAULT_THEME
+import com.lumina.core.ui.theme.AppTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import toStorageValue
 import java.io.IOException
 import java.io.InputStream
 import java.text.Normalizer
@@ -486,6 +492,13 @@ object AppUtils {
         val config = LocalConfiguration.current
         val resources = LocalResources.current
 
+        val fontFamily = remember {
+            getFontFamily(
+                context,
+                getStringSetting(context, resources.getString(R.string.Font), DEFAULT_FONT) ?: DEFAULT_FONT
+            )
+        }
+
         androidx.compose.runtime.LaunchedEffect(Unit) {
             withContext(Dispatchers.IO) {
                 Log.d("Loading","Theme loading started")
@@ -510,16 +523,19 @@ object AppUtils {
                 }
 
                 // Get theme ID
-                val themeId = getIntSetting(context, settingToChange, 11)
+                val themeName = getStringSetting(context, settingToChange, AppTheme.valueOf(DEFAULT_THEME).toStorageValue())
 
                 withContext(Dispatchers.Main) {
-                    viewModel.appTheme.value = AppTheme.fromId(themeId)
+                    viewModel.appTheme.value = appThemeFromStorage(themeName)
                     viewModel.isThemeLoaded.value = true
                 }
             }
         }
 
-        EscapeTheme(viewModel.appTheme.value) {
+        EscapeTheme(
+            theme = viewModel.appTheme.value,
+            fontFamily = fontFamily
+        ) {
             content()
         }
     }

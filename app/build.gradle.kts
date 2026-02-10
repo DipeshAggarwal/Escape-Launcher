@@ -121,6 +121,7 @@ if (!isFoss) {
 
 dependencies {
     implementation(project(":core:core-common"))
+    implementation(project(":core:core-ui"))
 
     // Core Android Libraries
     implementation(libs.androidx.core.ktx)

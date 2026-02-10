@@ -23,7 +23,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.geecee.escapelauncher.ui.theme.AppTheme
+import com.lumina.core.ui.theme.AppTheme
 import com.geecee.escapelauncher.utils.AppUtils
 import com.geecee.escapelauncher.utils.InstalledApp
 import com.geecee.escapelauncher.utils.getBooleanSetting
@@ -35,6 +35,7 @@ import com.geecee.escapelauncher.utils.managers.getSpacerSize
 import com.geecee.escapelauncher.utils.managers.getUsageForApp
 import com.geecee.escapelauncher.utils.managers.setSpacerSize
 import com.geecee.escapelauncher.utils.weatherProxy
+import com.lumina.core.common.AppDefaults.DEFAULT_THEME
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -306,7 +307,7 @@ class MainAppViewModel(application: Application) : AndroidViewModel(application)
 
     fun getWindow(): Window? = window
 
-    var appTheme: MutableState<AppTheme> = mutableStateOf(AppTheme.OFF_LIGHT) // App material theme
+    var appTheme: MutableState<AppTheme> = mutableStateOf(AppTheme.valueOf(DEFAULT_THEME)) // App material theme
 
     // Loading states for splash screen
     val isAppsLoaded = mutableStateOf(false)

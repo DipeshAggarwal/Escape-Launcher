@@ -66,6 +66,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import appThemeFromStorage
 import com.geecee.escapelauncher.BuildConfig
 import com.geecee.escapelauncher.HomeScreenModel
 import com.geecee.escapelauncher.R
@@ -82,11 +83,11 @@ import com.geecee.escapelauncher.ui.composables.SettingsSwitch
 import com.geecee.escapelauncher.ui.composables.SponsorBox
 import com.geecee.escapelauncher.ui.composables.ThemeCard
 import com.geecee.escapelauncher.ui.composables.WeatherAppPicker
-import com.geecee.escapelauncher.ui.theme.AppTheme
-import com.geecee.escapelauncher.ui.theme.CardContainerColor
-import com.geecee.escapelauncher.ui.theme.ContentColor
+import com.lumina.core.ui.theme.AppTheme
+import com.lumina.core.ui.theme.CardContainerColor
+import com.lumina.core.ui.theme.ContentColor
 import com.geecee.escapelauncher.ui.theme.getFontFamily
-import com.geecee.escapelauncher.ui.theme.resolveColorScheme
+import com.lumina.core.ui.theme.resolveColorScheme
 import com.geecee.escapelauncher.utils.AppUtils
 import com.geecee.escapelauncher.utils.AppUtils.loadTextFromAssets
 import com.geecee.escapelauncher.utils.AppUtils.resetHome
@@ -100,8 +101,8 @@ import com.geecee.escapelauncher.utils.getAppsAlignmentAsInt
 import com.geecee.escapelauncher.utils.getBooleanSetting
 import com.geecee.escapelauncher.utils.getHomeAlignmentAsInt
 import com.geecee.escapelauncher.utils.getHomeVAlignmentAsInt
-import com.geecee.escapelauncher.utils.getIntSetting
 import com.geecee.escapelauncher.utils.getSavedWidgetId
+import com.geecee.escapelauncher.utils.getStringSetting
 import com.geecee.escapelauncher.utils.getWidgetHeight
 import com.geecee.escapelauncher.utils.getWidgetOffset
 import com.geecee.escapelauncher.utils.getWidgetWidth
@@ -118,7 +119,6 @@ import com.geecee.escapelauncher.utils.removeWidget
 import com.geecee.escapelauncher.utils.resetActivity
 import com.geecee.escapelauncher.utils.saveWidgetId
 import com.geecee.escapelauncher.utils.setBooleanSetting
-import com.geecee.escapelauncher.utils.setIntSetting
 import com.geecee.escapelauncher.utils.setStatusBarImmersive
 import com.geecee.escapelauncher.utils.setStringSetting
 import com.geecee.escapelauncher.utils.setWidgetHeight
@@ -127,8 +127,10 @@ import com.geecee.escapelauncher.utils.setWidgetWidth
 import com.geecee.escapelauncher.utils.showLauncherSelector
 import com.geecee.escapelauncher.utils.showLauncherSettingsMenu
 import com.geecee.escapelauncher.utils.toggleBooleanSetting
+import com.lumina.core.common.AppDefaults.DEFAULT_THEME
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import toStorageValue
 import kotlin.math.roundToInt
 import kotlin.system.exitProcess
 import com.geecee.escapelauncher.MainAppViewModel as MainAppModel
@@ -891,17 +893,29 @@ fun ThemeOptions(
     val lSettingToChange = stringResource(R.string.lTheme)
 
     // Current highlighted theme card
-    var currentHighlightedThemeCard by remember { mutableIntStateOf(-1) }
+    var currentHighlightedThemeCard by remember { mutableStateOf<AppTheme?>(null) }
 
     // Current selected themes
     var currentSelectedTheme by remember {
-        mutableIntStateOf(getIntSetting(context, settingToChange, -1))
+        mutableStateOf(
+            appThemeFromStorage(
+                getStringSetting(context, settingToChange, null)
+            )
+        )
     }
     var currentSelectedDTheme by remember {
-        mutableIntStateOf(getIntSetting(context, dSettingToChange, -1))
+        mutableStateOf<AppTheme?>(
+            appThemeFromStorage(
+                getStringSetting(context, dSettingToChange, null)
+            )
+        )
     }
     var currentSelectedLTheme by remember {
-        mutableIntStateOf(getIntSetting(context, lSettingToChange, -1))
+        mutableStateOf<AppTheme?>(
+            appThemeFromStorage(
+                getStringSetting(context, lSettingToChange, null)
+            )
+        )
     }
 
     val isDark = isSystemInDarkTheme()
@@ -909,23 +923,21 @@ fun ThemeOptions(
     // Initialize selection states based on settings
     LaunchedEffect(Unit) {
         if (!getBooleanSetting(context, autoThemeChange, false)) {
-            currentSelectedDTheme = -1
-            currentSelectedLTheme = -1
+            currentSelectedDTheme = null
+            currentSelectedLTheme = null
         } else {
-            currentSelectedTheme = -1
+            currentSelectedTheme = AppTheme.valueOf(DEFAULT_THEME)
         }
     }
 
     val backgroundInteractionSource = remember { MutableInteractionSource() }
-
-    val themeIds = listOf(11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12)
 
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .combinedClickable(
                 onClick = {
-                    currentHighlightedThemeCard = -1
+                    currentHighlightedThemeCard = null
                 },
                 indication = null,
                 onLongClick = {},
@@ -941,58 +953,59 @@ fun ThemeOptions(
                     context, context.getString(R.string.autoThemeSwitch), false
                 ), isTopOfGroup = true, onCheckedChange = { switch ->
                     // Disable normal selection box or set it correctly
-                    currentSelectedTheme = if (switch) {
-                        -1
-                    } else {
-                        getIntSetting(context, settingToChange, 11)
-                    }
-
                     if (switch) {
-                        currentSelectedDTheme =
-                            getIntSetting(context, dSettingToChange, -1)
-                        currentSelectedLTheme =
-                            getIntSetting(context, lSettingToChange, -1)
+                        currentSelectedLTheme = appThemeFromStorage(
+                            getStringSetting(context, dSettingToChange, null)
+                        )
+                        currentSelectedLTheme = appThemeFromStorage(
+                            getStringSetting(context, lSettingToChange, null)
+                        )
+
+                        currentSelectedTheme = AppTheme.valueOf(DEFAULT_THEME)
                     } else {
-                        currentSelectedDTheme = -1
-                        currentSelectedLTheme = -1
+                        currentSelectedTheme = appThemeFromStorage(
+                            getStringSetting(context, settingToChange, null)
+                        )
+
+                        currentSelectedDTheme = null
+                        currentSelectedLTheme = null
                     }
 
                     // Remove the light dark button
-                    currentHighlightedThemeCard = -1
+                    currentHighlightedThemeCard = null
 
                     if (switch) {
-                        currentSelectedTheme = -1
+                        currentSelectedTheme = AppTheme.valueOf(DEFAULT_THEME)
 
-                        currentSelectedDTheme =
-                            getIntSetting(context, dSettingToChange, -1)
-                        currentSelectedLTheme =
-                            getIntSetting(context, lSettingToChange, -1)
+                        currentSelectedDTheme = appThemeFromStorage(
+                            getStringSetting(context, dSettingToChange, null)
+                        )
+                        currentSelectedLTheme = appThemeFromStorage(
+                            getStringSetting(context, lSettingToChange, null)
+                        )
 
-
-                        val newThemeId = if (isDark) {
+                        val newTheme = if (isDark) {
                             currentSelectedDTheme
                         } else {
                             currentSelectedLTheme
                         }
 
-                        if (newThemeId != -1) {
-                            mainAppModel.appTheme.value = AppTheme.fromId(newThemeId)
+                        newTheme?.let {
+                            mainAppModel.appTheme.value = it
                         }
 
                     } else {
-                        currentSelectedTheme =
-                            getIntSetting(context, settingToChange, 11)
+                        currentSelectedTheme = appThemeFromStorage(
+                            getStringSetting(context, settingToChange, null)
+                        )
 
-                        currentSelectedDTheme = -1
-                        currentSelectedLTheme = -1
+                        currentSelectedDTheme = null
+                        currentSelectedLTheme = null
 
-                        if (currentSelectedTheme != -1) {
-                            mainAppModel.appTheme.value =
-                                AppTheme.fromId(currentSelectedTheme)
-                        }
+                        mainAppModel.appTheme.value = currentSelectedTheme
                     }
 
-                    currentHighlightedThemeCard = -1
+                    currentHighlightedThemeCard = null
 
                     setBooleanSetting(
                         context,
@@ -1015,14 +1028,14 @@ fun ThemeOptions(
         item {
             SettingsSpacer(spacerSize)
         }
-        itemsIndexed(themeIds, key = { _, themeId -> themeId }) { index, themeId ->
-            val isSelected = currentSelectedTheme == themeId
-            val isDSelected = currentSelectedDTheme == themeId
-            val isLSelected = currentSelectedLTheme == themeId
-            val showLightDarkPicker = currentHighlightedThemeCard == themeId
+        itemsIndexed(AppTheme.entries, key = { _, theme -> theme }) { index, theme ->
+            val isSelected = currentSelectedTheme == theme
+            val isDSelected = currentSelectedDTheme == theme
+            val isLSelected = currentSelectedLTheme == theme
+            val showLightDarkPicker = currentHighlightedThemeCard == theme
 
             ThemeCard(
-                theme = themeId,
+                theme = theme,
                 showLightDarkPicker = remember(showLightDarkPicker) {
                     mutableStateOf(
                         showLightDarkPicker
@@ -1031,32 +1044,44 @@ fun ThemeOptions(
                 isSelected = remember(isSelected) { mutableStateOf(isSelected) },
                 isDSelected = remember(isDSelected) { mutableStateOf(isDSelected) },
                 isLSelected = remember(isLSelected) { mutableStateOf(isLSelected) },
-                updateLTheme = { theme ->
-                    setIntSetting(context, context.getString(R.string.lTheme), theme)
-                    mainAppModel.appTheme.value = AppTheme.fromId(themeId)
+
+                updateLTheme = { selectedTheme ->
+                    setStringSetting(
+                        context,
+                        context.getString(R.string.lTheme),
+                        selectedTheme.toStorageValue()
+                    )
+                    mainAppModel.appTheme.value = selectedTheme
                     currentSelectedLTheme = theme
-                    currentHighlightedThemeCard = -1
+                    currentHighlightedThemeCard = null
                 },
-                updateDTheme = { theme ->
-                    setIntSetting(context, context.getString(R.string.dTheme), theme)
-                    mainAppModel.appTheme.value = AppTheme.fromId(themeId)
+                updateDTheme = { selectedTheme ->
+                    setStringSetting(
+                        context,
+                        context.getString(R.string.dTheme),
+                        selectedTheme.toStorageValue())
+                    mainAppModel.appTheme.value = theme
                     currentSelectedDTheme = theme
-                    currentHighlightedThemeCard = -1
+                    currentHighlightedThemeCard = null
                 },
                 modifier = Modifier.fillMaxWidth(),
                 isTopOfGroup = index == 0,
-                isBottomOfGroup = index == themeIds.size - 1,
-                onClick = { theme ->
+                isBottomOfGroup = index == AppTheme.entries.size - 1,
+                onClick = { selectedTheme ->
                     if (getBooleanSetting(
                             context, context.getString(R.string.autoThemeSwitch), false
                         )
                     ) {
                         // For auto theme mode, show light/dark picker
-                        currentHighlightedThemeCard = theme
+                        currentHighlightedThemeCard = selectedTheme
                     } else {
                         // For single theme mode, just set the theme
-                        setIntSetting(context, context.getString(R.string.theme), theme)
-                        mainAppModel.appTheme.value = AppTheme.fromId(themeId)
+                        setStringSetting(
+                            context,
+                            context.getString(R.string.theme),
+                            selectedTheme.toStorageValue()
+                        )
+                        mainAppModel.appTheme.value = theme
                         currentSelectedTheme = theme
                     }
                 })

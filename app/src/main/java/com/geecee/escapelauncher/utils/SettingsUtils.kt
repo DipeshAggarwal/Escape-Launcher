@@ -310,7 +310,7 @@ fun getBooleanSetting(context: Context, setting: String): Boolean {
     return sharedPreferences.getBoolean(setting, false)
 }
 
-fun getStringSetting(context: Context, setting: String, defaultValue: String): String {
+fun getStringSetting(context: Context, setting: String, defaultValue: String?): String? {
     val sharedPreferences = context.getSharedPreferences(
         Migration.UNIFIED_PREFS_NAME, Context.MODE_PRIVATE
     )
