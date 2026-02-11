@@ -46,6 +46,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -474,6 +475,8 @@ fun FavoritesSelectionScreen(
 ) {
     // Add a small delay before rendering the full list to prevent jank during page transition
     var showList by remember { mutableStateOf(false) }
+    val installedApps by homeScreenModel.installedApps.collectAsState(emptyList())
+
     LaunchedEffect(Unit) {
         delay(300)
         showList = true
@@ -482,7 +485,7 @@ fun FavoritesSelectionScreen(
     Box(Modifier.fillMaxSize().padding(start = 30.dp, end = 30.dp)) {
         if (showList) {
             BulkAppManager(
-                apps = homeScreenModel.installedApps,
+                apps = installedApps,
                 preSelectedApps = homeScreenModel.favoriteApps,
                 title = stringResource(R.string.choose_your_favourite_apps),
                 reorderable = true,

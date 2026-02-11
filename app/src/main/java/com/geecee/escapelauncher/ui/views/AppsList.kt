@@ -22,6 +22,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -43,6 +45,7 @@ import com.lumina.core.ui.theme.transparentHalf
 import com.geecee.escapelauncher.utils.AppUtils
 import com.geecee.escapelauncher.utils.AppUtils.doHapticFeedBack
 import com.geecee.escapelauncher.utils.AppUtils.resetHome
+import com.geecee.escapelauncher.utils.InstalledApp
 import com.geecee.escapelauncher.utils.PrivateSpaceSettings
 import com.geecee.escapelauncher.utils.canUseSecureFolder
 import com.geecee.escapelauncher.utils.doesPrivateSpaceExist
@@ -51,6 +54,7 @@ import com.geecee.escapelauncher.utils.getAppsAlignment
 import com.geecee.escapelauncher.utils.getBooleanSetting
 import com.geecee.escapelauncher.utils.launchSecureFolder
 import com.geecee.escapelauncher.utils.unlockPrivateSpace
+import kotlinx.coroutines.flow.MutableStateFlow
 import com.geecee.escapelauncher.MainAppViewModel as MainAppModel
 import com.geecee.escapelauncher.utils.isPrivateSpaceUnlocked as isPrivateSpace
 
@@ -62,6 +66,7 @@ fun AppsList(
     mainAppModel: MainAppModel, homeScreenModel: HomeScreenModel
 ) {
     val haptics = LocalHapticFeedback.current
+    val filteredApps by homeScreenModel.filteredApps.collectAsState(emptyList())
 
     val bottomSearch = getBooleanSetting(
         mainAppModel.getContext(),
@@ -76,6 +81,8 @@ fun AppsList(
 
     @Composable
     fun SearchBox() {
+        val matchedApps by homeScreenModel.filteredApps.collectAsState(emptyList())
+
         AnimatedPillSearchBar(
             isExpanded = homeScreenModel.searchExpanded.value,
             onExpandedChange = { it: Boolean ->
@@ -93,12 +100,7 @@ fun AppsList(
                     false
                 )
 
-                // Get results synchronously for auto-open logic to avoid race conditions with ViewModel update
-                val matchedApps = homeScreenModel.installedApps.filter { app ->
-                    val isHidden = mainAppModel.hiddenAppsManager.isAppHidden(app.packageName)
-                    val matchesQuery = AppUtils.fuzzyMatch(app.displayName, query)
-                    matchesQuery && (!isHidden || showHiddenInSearch)
-                }
+                // Get results synchronously for auto-open logic to avoid race conditions with ViewModel updat
                 val sortedResults = AppUtils.sortAppsByRelevance(matchedApps, query)
 
                 // If autoOpen is enabled then open the app like you would normally
@@ -128,11 +130,6 @@ fun AppsList(
                     false
                 )
 
-                val matchedApps = homeScreenModel.installedApps.filter { app ->
-                    val isHidden = mainAppModel.hiddenAppsManager.isAppHidden(app.packageName)
-                    val matchesQuery = AppUtils.fuzzyMatch(app.displayName, query)
-                    matchesQuery && (!isHidden || showHiddenInSearch)
-                }
                 val sortedResults = AppUtils.sortAppsByRelevance(matchedApps, query)
 
                 if (sortedResults.isNotEmpty()) {
@@ -191,7 +188,7 @@ fun AppsList(
                 }
             }
 
-            items(homeScreenModel.filteredApps, key = { app -> app.packageName })
+            items(filteredApps, key = { app -> app.packageName })
             { app ->
 
                 val screenTime =

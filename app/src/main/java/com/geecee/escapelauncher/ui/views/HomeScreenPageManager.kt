@@ -219,7 +219,9 @@ fun HomeScreenPageManager(
             AppAction(
                 label = stringResource(R.string.hide),
                 onClick = {
-                    mainAppModel.hiddenAppsManager.addHiddenApp(homeScreenModel.currentSelectedApp.value.packageName)
+                    homeScreenModel.hideApp(
+                        homeScreenModel.currentSelectedApp.value.packageName
+                    )
                     homeScreenModel.showBottomSheet.value = false
                     mainAppModel.notifyHiddenAppsChanged()
                     resetHome(homeScreenModel, false)

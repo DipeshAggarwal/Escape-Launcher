@@ -61,9 +61,7 @@ class MainHomeScreenActivity : ComponentActivity() {
     private lateinit var screenOffReceiver: ScreenOffReceiver
     private lateinit var packageChangeReceiver: BroadcastReceiver
 
-    private val homeScreenModel by viewModels<HomeScreenModel> {
-        HomeScreenModelFactory(application, viewModel)
-    }
+    private val homeScreenModel: HomeScreenModel by viewModels()
     private val viewModel: MainAppViewModel by viewModels()
 
     private val pushNotificationPermissionLauncher = registerForActivityResult(
@@ -103,7 +101,7 @@ class MainHomeScreenActivity : ComponentActivity() {
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
         splashScreen.setKeepOnScreenCondition {
-            !viewModel.isReady
+            !homeScreenModel.isReady && !viewModel.isReady
         }
 
         // Make full screen
@@ -264,7 +262,7 @@ class MainHomeScreenActivity : ComponentActivity() {
 
         if (intent.action == Intent.ACTION_MAIN && intent.hasCategory(Intent.CATEGORY_HOME)) {
             AppUtils.resetHome(homeScreenModel)
-            viewModel.requestToGoHome()
+            homeScreenModel.requestToGoHome()
         }
     }
 
@@ -300,8 +298,8 @@ class MainHomeScreenActivity : ComponentActivity() {
     private fun SetupNavHost(startDestination: String) {
         val navController = rememberNavController()
 
-        LaunchedEffect(viewModel.navigateHomeEvent) {
-            viewModel.navigateHomeEvent.collectLatest {
+        LaunchedEffect(homeScreenModel.navigateHomeEvent) {
+            homeScreenModel.navigateHomeEvent.collectLatest {
                 if (navController.currentDestination?.route != "home") {
                     homeScreenModel.goToMainPage()
                     homeScreenModel.appsListScrollState.scrollToItem(0)

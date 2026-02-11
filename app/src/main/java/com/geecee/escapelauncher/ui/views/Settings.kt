@@ -45,6 +45,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
@@ -166,6 +167,7 @@ fun Settings(
     ) {
 
         val navController = rememberNavController()
+        val installedApps by homeScreenModel.installedApps.collectAsState(emptyList())
 
         NavHost(navController = navController, "mainSettingsPage") {
             composable(
@@ -201,11 +203,11 @@ fun Settings(
                 exitTransition = { fadeOut(tween(300)) }) {
                 val challengeApps = remember(mainAppModel.challengesTrigger.intValue) {
                     val currentChallenges = mainAppModel.challengesManager.getChallengeApps()
-                    homeScreenModel.installedApps.filter { it.packageName in currentChallenges }
+                    homeScreenModel.installedApps.value.filter { it.packageName in currentChallenges }
                 }
 
                 BulkAppManager(
-                    apps = homeScreenModel.installedApps,
+                    apps = installedApps,
                     preSelectedApps = challengeApps,
                     title = stringResource(R.string.manage_open_challenges),
                     onBackClicked = { navController.popBackStack() },
@@ -260,11 +262,11 @@ fun Settings(
                 exitTransition = { fadeOut(tween(300)) }) {
                 val hiddenAppsList = remember(mainAppModel.hiddenAppsTrigger.intValue) {
                     val currentHidden = mainAppModel.hiddenAppsManager.getHiddenApps()
-                    homeScreenModel.installedApps.filter { it.packageName in currentHidden }
+                    homeScreenModel.installedApps.value.filter { it.packageName in currentHidden }
                 }
 
                 BulkAppManager(
-                    apps = homeScreenModel.installedApps,
+                    apps = installedApps,
                     preSelectedApps = hiddenAppsList,
                     title = stringResource(R.string.manage_hidden_apps),
                     onBackClicked = { navController.popBackStack() },
@@ -285,11 +287,13 @@ fun Settings(
                 exitTransition = { fadeOut(tween(300)) }) {
                 val preSelectedFavoriteApps = remember(homeScreenModel.favoriteApps.size) {
                     val favoritePackages = mainAppModel.favoriteAppsManager.getFavoriteApps()
-                    favoritePackages.mapNotNull { pkg -> homeScreenModel.installedApps.find { it.packageName == pkg } }
+                    favoritePackages.mapNotNull { pkg ->
+                        homeScreenModel.installedApps.value.find { it.packageName == pkg }
+                    }
                 }
 
                 BulkAppManager(
-                    apps = homeScreenModel.installedApps,
+                    apps = installedApps,
                     preSelectedApps = preSelectedFavoriteApps,
                     title = stringResource(R.string.manage_favourite_apps),
                     reorderable = true,
@@ -867,9 +871,10 @@ fun MainSettingsPage(
         item { SettingsSpacer(spacerSize) }
     }
 
+    val installedApps by homeScreenModel.installedApps.collectAsState(emptyList())
     if (showWeatherAppPicker) {
         WeatherAppPicker(
-            apps = homeScreenModel.installedApps,
+            apps = installedApps,
             onAppSelected = { app ->
                 setStringSetting(
                     mainAppModel.getContext(),
@@ -1412,7 +1417,7 @@ fun HiddenApps(
                     ),
                     onClick = {
                         val app =
-                            homeScreenModel.installedApps.find { it.packageName == appPackageName }
+                            homeScreenModel.installedApps.value.find { it.packageName == appPackageName }
                                 ?: AppUtils.getInstalledAppFromPackageName(
                                     mainAppModel.getContext(),
                                     appPackageName

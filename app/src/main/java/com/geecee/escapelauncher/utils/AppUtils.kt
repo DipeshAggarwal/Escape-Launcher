@@ -356,7 +356,7 @@ object AppUtils {
         homeScreenModel.coroutineScope.launch {
             delay(200)
             if (shouldGoToFirstPage == true) {
-                homeScreenModel.mainAppViewModel.requestToGoHome()
+                homeScreenModel.requestToGoHome()
             }
             homeScreenModel.searchExpanded.value = false
             homeScreenModel.searchText.value = ""

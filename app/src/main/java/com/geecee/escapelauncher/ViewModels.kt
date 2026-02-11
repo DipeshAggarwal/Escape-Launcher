@@ -19,6 +19,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -33,30 +34,67 @@ import com.geecee.escapelauncher.utils.managers.HiddenAppsManager
 import com.geecee.escapelauncher.utils.managers.getScreenTimeListSorted
 import com.geecee.escapelauncher.utils.managers.getSpacerSize
 import com.geecee.escapelauncher.utils.managers.getUsageForApp
+import com.geecee.escapelauncher.utils.managers.resetAndGetCountdownTime
 import com.geecee.escapelauncher.utils.managers.setSpacerSize
 import com.geecee.escapelauncher.utils.weatherProxy
 import com.lumina.core.common.AppDefaults.DEFAULT_THEME
+import com.lumina.domain.apps.HiddenAppsRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.Normalizer
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import javax.inject.Inject
 
 /**
  * Home Screen View Model - Used for holding UI state for the home screen pages
  */
-class HomeScreenModel(application: Application, val mainAppViewModel: MainAppViewModel) :
-    AndroidViewModel(application) {
-    var currentSelectedApp = mutableStateOf(InstalledApp("", "", ComponentName("", "")))
-    val isCurrentAppChallenged by derivedStateOf {
-        mainAppViewModel.challengesTrigger.intValue
-        mainAppViewModel.challengesManager.doesAppHaveChallenge(currentSelectedApp.value.packageName)
+@HiltViewModel
+class HomeScreenModel @Inject constructor(
+    application: Application,
+    private val hiddenAppsRepository: HiddenAppsRepository
+): AndroidViewModel(application) {
+    private val context get() = getApplication<Application>()
+
+    private val _navigateHomeEvent = MutableSharedFlow<Unit>(
+        replay = 0,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST,
+        extraBufferCapacity = 1
+    )
+    val navigateHomeEvent = _navigateHomeEvent.asSharedFlow()
+
+    fun requestToGoHome() {
+        viewModelScope.launch {
+            _navigateHomeEvent.emit(Unit)
+        }
     }
+
+    private val challengesManager = ChallengesManager(getApplication())
+    private val challengesTrigger = mutableIntStateOf(0)
+
+    private val favouriteManager = FavoriteAppsManager(getApplication())
+    val isFavouritesLoaded = mutableStateOf(false)
+
+    val isReady by derivedStateOf {
+        isAppsLoaded.value && isFavouritesLoaded.value
+    }
+
+    var currentSelectedApp = mutableStateOf(InstalledApp("", "", ComponentName("", "")))
+    val isAppsLoaded = mutableStateOf(false)
+
+    val isCurrentAppChallenged by derivedStateOf {
+        challengesTrigger.intValue
+        challengesManager.doesAppHaveChallenge(currentSelectedApp.value.packageName)
+    }
+
     val isCurrentAppFavorite by derivedStateOf {
         favoriteApps.contains(currentSelectedApp.value)
     }
@@ -71,56 +109,62 @@ class HomeScreenModel(application: Application, val mainAppViewModel: MainAppVie
     val coroutineScope = viewModelScope
     val interactionSource = MutableInteractionSource()
 
-    val installedApps = mutableStateListOf<InstalledApp>()
+    val installedApps = MutableStateFlow<List<InstalledApp>>(emptyList())
 
-    val filteredApps = mutableStateListOf<InstalledApp>()
+    val hiddenApps = hiddenAppsRepository.allHiddenApps()
 
-    fun updateFilteredApps() {
-        // Take a snapshot of the list and other state on the main thread to avoid ConcurrentModificationException
-        // when iterating on Dispatchers.Default while the original list is being modified.
-        val appsSnapshot = installedApps.toList()
-        val query = searchText.value.trim()
-        val context = mainAppViewModel.getContext()
-        val showHiddenInSearch = getBooleanSetting(
-            context,
-            context.resources.getString(R.string.showHiddenAppsInSearch),
-            false
-        )
+    val searchQuery = MutableStateFlow<String>("")
 
-        coroutineScope.launch(Dispatchers.Default) {
-            val apps = appsSnapshot.filter {
-                it.packageName != context.packageName
-            }
+    val showHiddenAppsInSearch = MutableStateFlow(getBooleanSetting(
+        context,
+        context.getString(R.string.showHiddenAppsInSearch),
+        false
+    ))
 
-            val filtered = if (query.isBlank()) {
-                apps.filter { !mainAppViewModel.hiddenAppsManager.isAppHidden(it.packageName) }
-            } else {
-                val regexUnaccentPattern = Regex("\\p{M}+")
-                apps.filter { app ->
-                    val isHidden =
-                        mainAppViewModel.hiddenAppsManager.isAppHidden(app.packageName)
-                    val matchesQuery = AppUtils.fuzzyMatch(app.displayName, query)
-                    matchesQuery && (!isHidden || showHiddenInSearch)
-                }.sortedWith(compareBy<InstalledApp> { app ->
-                    val normalizedQuery = Normalizer.normalize(query, Normalizer.Form.NFD)
-                        .replace(regexUnaccentPattern, "")
-                        .lowercase()
+    val filteredApps = combine(
+        installedApps,
+        hiddenApps,
+        searchQuery,
+        showHiddenAppsInSearch
+    ) { apps, hiddenSet, query, showHiddenAppsInSearch ->
+        val trimmedQuery = query.trim()
+        val visibleApps = apps.filter { it.packageName != context.packageName}
 
-                    val normalizedName = Normalizer.normalize(app.displayName, Normalizer.Form.NFD)
-                        .replace(regexUnaccentPattern, "")
-                        .lowercase()
+        if (trimmedQuery.isBlank()) {
+            visibleApps.filterNot { hiddenSet.contains(it.packageName) }
+        } else {
+            val regexUnaccentPattern = Regex("\\p{M}+")
+            visibleApps.filter { app ->
+                val isHidden = hiddenSet.contains(app.packageName)
+                val matchesQuery = AppUtils.fuzzyMatch(app.displayName, query)
 
-                    when {
-                        normalizedName.startsWith(normalizedQuery) -> 0
-                        normalizedName.contains(normalizedQuery) -> 1
-                        else -> 2
-                    }
-                }.thenBy { it.displayName.lowercase() })
-            }
-            withContext(Dispatchers.Main) {
-                filteredApps.clear()
-                filteredApps.addAll(filtered)
-            }
+                matchesQuery && (!isHidden || showHiddenAppsInSearch)
+            }.sortedWith(compareBy<InstalledApp> { app ->
+                val normalisedQuery = Normalizer.normalize(query, Normalizer.Form.NFD)
+                    .replace(regexUnaccentPattern, "")
+
+                val normalisedName = Normalizer.normalize(app.displayName, Normalizer.Form.NFD)
+                    .replace(regexUnaccentPattern, "")
+                    .lowercase()
+
+                when {
+                    normalisedName.startsWith(normalisedQuery) -> 0
+                    normalisedName.contains(normalisedQuery) -> 1
+                    else -> 2
+                }
+            }.thenBy {it.displayName.lowercase() })
+        }
+    }
+
+    fun hideApp(packageName: String) {
+        viewModelScope.launch {
+            hiddenAppsRepository.hideApp((packageName))
+        }
+    }
+
+    fun unhideApp(packageName: String) {
+        viewModelScope.launch {
+            hiddenAppsRepository.unhideApp(packageName)
         }
     }
 
@@ -130,8 +174,8 @@ class HomeScreenModel(application: Application, val mainAppViewModel: MainAppVie
 
     val pagerState = PagerState(
         currentPage = if (getBooleanSetting(
-                context = mainAppViewModel.getContext(),
-                setting = mainAppViewModel.getContext().resources.getString(R.string.hideScreenTimePage),
+                context = context,
+                setting = context.resources.getString(R.string.hideScreenTimePage),
                 defaultValue = false
             )
         ) {
@@ -142,8 +186,8 @@ class HomeScreenModel(application: Application, val mainAppViewModel: MainAppVie
         currentPageOffsetFraction = 0f
     ) {
         if (getBooleanSetting(
-                context = mainAppViewModel.getContext(),
-                setting = mainAppViewModel.getContext().resources.getString(R.string.hideScreenTimePage),
+                context = context,
+                setting = context.resources.getString(R.string.hideScreenTimePage),
                 defaultValue = false
             )
         ) {
@@ -155,8 +199,8 @@ class HomeScreenModel(application: Application, val mainAppViewModel: MainAppVie
 
     private fun getMainPageIndex(): Int {
         val hideScreenTime = getBooleanSetting(
-            context = mainAppViewModel.getContext(),
-            setting = mainAppViewModel.getContext().resources.getString(R.string.hideScreenTimePage),
+            context = context,
+            setting = context.resources.getString(R.string.hideScreenTimePage),
             defaultValue = false
         )
         return if (hideScreenTime) 0 else 1
@@ -197,12 +241,9 @@ class HomeScreenModel(application: Application, val mainAppViewModel: MainAppVie
 
     init {
         loadApps()
-        coroutineScope.launch {
-            androidx.compose.runtime.snapshotFlow {
-                Triple(searchText.value, mainAppViewModel.hiddenAppsTrigger.intValue, Unit)
-            }.collect {
-                updateFilteredApps()
-            }
+        viewModelScope.launch {
+            snapshotFlow { searchText.value }
+                .collect{ searchQuery.value = it }
         }
     }
 
@@ -217,15 +258,13 @@ class HomeScreenModel(application: Application, val mainAppViewModel: MainAppVie
     private suspend fun suspendLoadApps() {
         Log.d("Loading", "SuspendLoadApps started")
         val apps = withContext(Dispatchers.IO) {
-            AppUtils.getAllInstalledApps(mainAppViewModel.getContext()).sortedBy {
+            AppUtils.getAllInstalledApps(context).sortedBy {
                 it.displayName.lowercase()
             }
         }
         withContext(Dispatchers.Main) {
-            installedApps.clear()
-            installedApps.addAll(apps)
-            updateFilteredApps()
-            mainAppViewModel.isAppsLoaded.value = true
+            installedApps.value = apps
+            isAppsLoaded.value = true
         }
     }
 
@@ -239,16 +278,16 @@ class HomeScreenModel(application: Application, val mainAppViewModel: MainAppVie
         Log.d("Loading", "SuspendReloadFavouriteApps started")
 
         val favoritePackageNames = withContext(Dispatchers.IO) {
-            mainAppViewModel.favoriteAppsManager.getFavoriteApps()
+            favouriteManager.getFavoriteApps()
         }
 
         withContext(Dispatchers.Main) {
             val newFavoriteApps = favoritePackageNames.mapNotNull { packageName ->
-                installedApps.find { it.packageName == packageName }
+                installedApps.value.find { it.packageName == packageName }
             }
             favoriteApps.clear()
             favoriteApps.addAll(newFavoriteApps)
-            mainAppViewModel.isFavoritesLoaded.value = true
+            isFavouritesLoaded.value = true
         }
     }
 
@@ -257,37 +296,14 @@ class HomeScreenModel(application: Application, val mainAppViewModel: MainAppVie
     }
 }
 
-class HomeScreenModelFactory(
-    private val application: Application,
-    private val mainAppViewModel: MainAppViewModel
-) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(HomeScreenModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return HomeScreenModel(application, mainAppViewModel) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
-    }
-}
-
 /**
  * Main App View Model - Used for data that needs to be passed around the app
  */
-class MainAppViewModel(application: Application) : AndroidViewModel(application) {
+@HiltViewModel
+class MainAppViewModel @Inject constructor(
+    application: Application
+): AndroidViewModel(application) {
     private val appContext: Context = application.applicationContext // The app context
-
-    private val _navigateHomeEvent = MutableSharedFlow<Unit>(
-        replay = 0,
-        onBufferOverflow = BufferOverflow.DROP_OLDEST,
-        extraBufferCapacity = 1
-    )
-    val navigateHomeEvent = _navigateHomeEvent.asSharedFlow()
-
-    fun requestToGoHome() {
-        viewModelScope.launch {
-            _navigateHomeEvent.emit(Unit)
-        }
-    }
 
     var spacerSize by mutableFloatStateOf(getSpacerSize(getApplication()))
         private set
@@ -316,7 +332,7 @@ class MainAppViewModel(application: Application) : AndroidViewModel(application)
     val isScreenTimeLoaded = mutableStateOf(false)
 
     val isReady by derivedStateOf {
-        isAppsLoaded.value && isFavoritesLoaded.value && isThemeLoaded.value && isScreenTimeLoaded.value
+        isThemeLoaded.value && isScreenTimeLoaded.value
     }
 
     // Managers

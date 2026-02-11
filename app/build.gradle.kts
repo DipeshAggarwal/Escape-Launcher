@@ -128,6 +128,8 @@ dependencies {
 
     implementation(project(":data:data-apps"))
 
+    implementation(project(":domain:domain-apps"))
+
     implementation(project(":features:features-apphiding"))
 
     // Core Android Libraries
