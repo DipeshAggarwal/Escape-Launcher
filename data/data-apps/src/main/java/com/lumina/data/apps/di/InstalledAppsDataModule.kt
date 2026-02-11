@@ -1,0 +1,19 @@
+package com.lumina.data.apps.di
+
+import com.lumina.data.apps.PackageManagerInstalledAppsRepository
+import com.lumina.domain.apps.InstalledAppsRepository
+import dagger.Binds
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
+
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class InstalledAppsDataModule {
+    @Binds
+    @Singleton
+    abstract fun bindInstalledAppsDataModule(
+        installedAppsRepository: PackageManagerInstalledAppsRepository
+    ): InstalledAppsRepository
+}

@@ -220,12 +220,13 @@ class MainHomeScreenActivity : ComponentActivity() {
             viewModel.isAppOpened = false
         }
 
-        // Reset home
-        try {
-            AppUtils.resetHome(homeScreenModel, viewModel.shouldGoHomeOnResume.value)
+        if (viewModel.shouldGoHomeOnResume.value) {
             viewModel.shouldGoHomeOnResume.value = false
-        } catch (ex: Exception) {
-            Log.e("ERROR", ex.toString())
+            try {
+                AppUtils.resetHome(homeScreenModel, true)
+            } catch (ex: Exception) {
+                Log.e("ERROR", ex.toString())
+            }
         }
 
 
@@ -243,16 +244,6 @@ class MainHomeScreenActivity : ComponentActivity() {
         }
         if (::packageChangeReceiver.isInitialized) {
             unregisterReceiver(packageChangeReceiver)
-        }
-    }
-
-    override fun onPause() {
-        super.onPause()
-
-        try {
-            AppUtils.resetHome(homeScreenModel, true)
-        } catch (ex: Exception) {
-            Log.e("ERROR", ex.toString())
         }
     }
 

@@ -66,6 +66,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.geecee.escapelauncher.BuildConfig
 import com.geecee.escapelauncher.HomeScreenModel
@@ -83,6 +84,7 @@ import com.geecee.escapelauncher.utils.getBooleanSetting
 import com.geecee.escapelauncher.utils.isDefaultLauncher
 import com.geecee.escapelauncher.utils.setBooleanSetting
 import com.geecee.escapelauncher.utils.showLauncherSelector
+import com.lumina.feature.apphiding.AppHidingViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -475,7 +477,9 @@ fun FavoritesSelectionScreen(
 ) {
     // Add a small delay before rendering the full list to prevent jank during page transition
     var showList by remember { mutableStateOf(false) }
-    val installedApps by homeScreenModel.installedApps.collectAsState(emptyList())
+
+    val viewModel: AppHidingViewModel = hiltViewModel()
+    val installedApps by viewModel.installedApps.collectAsState(emptyList())
 
     LaunchedEffect(Unit) {
         delay(300)
@@ -486,7 +490,7 @@ fun FavoritesSelectionScreen(
         if (showList) {
             BulkAppManager(
                 apps = installedApps,
-                preSelectedApps = homeScreenModel.favoriteApps,
+                preSelectedApps = homeScreenModel.favoriteApps.map { it.packageName }.toSet(),
                 title = stringResource(R.string.choose_your_favourite_apps),
                 reorderable = true,
                 onAppMoved = { fromIndex, toIndex ->

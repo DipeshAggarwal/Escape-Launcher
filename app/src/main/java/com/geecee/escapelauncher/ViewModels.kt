@@ -21,8 +21,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.lumina.core.ui.theme.AppTheme
 import com.geecee.escapelauncher.utils.AppUtils
@@ -30,14 +28,13 @@ import com.geecee.escapelauncher.utils.InstalledApp
 import com.geecee.escapelauncher.utils.getBooleanSetting
 import com.geecee.escapelauncher.utils.managers.ChallengesManager
 import com.geecee.escapelauncher.utils.managers.FavoriteAppsManager
-import com.geecee.escapelauncher.utils.managers.HiddenAppsManager
 import com.geecee.escapelauncher.utils.managers.getScreenTimeListSorted
 import com.geecee.escapelauncher.utils.managers.getSpacerSize
 import com.geecee.escapelauncher.utils.managers.getUsageForApp
-import com.geecee.escapelauncher.utils.managers.resetAndGetCountdownTime
 import com.geecee.escapelauncher.utils.managers.setSpacerSize
 import com.geecee.escapelauncher.utils.weatherProxy
 import com.lumina.core.common.AppDefaults.DEFAULT_THEME
+import com.lumina.core.common.TextUtils.UNACCENT_REGEX
 import com.lumina.domain.apps.HiddenAppsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -133,7 +130,6 @@ class HomeScreenModel @Inject constructor(
         if (trimmedQuery.isBlank()) {
             visibleApps.filterNot { hiddenSet.contains(it.packageName) }
         } else {
-            val regexUnaccentPattern = Regex("\\p{M}+")
             visibleApps.filter { app ->
                 val isHidden = hiddenSet.contains(app.packageName)
                 val matchesQuery = AppUtils.fuzzyMatch(app.displayName, query)
@@ -141,10 +137,11 @@ class HomeScreenModel @Inject constructor(
                 matchesQuery && (!isHidden || showHiddenAppsInSearch)
             }.sortedWith(compareBy<InstalledApp> { app ->
                 val normalisedQuery = Normalizer.normalize(query, Normalizer.Form.NFD)
-                    .replace(regexUnaccentPattern, "")
+                    .replace(UNACCENT_REGEX, "")
+                    .lowercase()
 
                 val normalisedName = Normalizer.normalize(app.displayName, Normalizer.Form.NFD)
-                    .replace(regexUnaccentPattern, "")
+                    .replace(UNACCENT_REGEX, "")
                     .lowercase()
 
                 when {
@@ -339,16 +336,6 @@ class MainAppViewModel @Inject constructor(
 
     val favoriteAppsManager: FavoriteAppsManager =
         FavoriteAppsManager(application) // Favorite apps manager
-
-    // Hidden Apps
-
-    val hiddenAppsManager: HiddenAppsManager = HiddenAppsManager(application) // Hidden apps manager
-
-    val hiddenAppsTrigger = mutableIntStateOf(0)
-
-    fun notifyHiddenAppsChanged() {
-        hiddenAppsTrigger.intValue++
-    }
 
     // Open Countdown
 

@@ -223,7 +223,6 @@ fun HomeScreenPageManager(
                         homeScreenModel.currentSelectedApp.value.packageName
                     )
                     homeScreenModel.showBottomSheet.value = false
-                    mainAppModel.notifyHiddenAppsChanged()
                     resetHome(homeScreenModel, false)
                 }
             ),

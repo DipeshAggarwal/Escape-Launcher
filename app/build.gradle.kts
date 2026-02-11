@@ -121,6 +121,7 @@ if (!isFoss) {
 }
 
 dependencies {
+    implementation(project(":core:core-android"))
     implementation(project(":core:core-common"))
     implementation(project(":core:core-datastore"))
     implementation(project(":core:core-logging"))
@@ -160,8 +161,8 @@ dependencies {
 
     // Hilt
     implementation(libs.hilt.android)
+    implementation(libs.androidx.hilt.navigation.compose)
     ksp(libs.hilt.compiler)
-    ksp(libs.androidx.hilt.navigation.compose)
 
     // Testing Libraries
     testImplementation(libs.junit)

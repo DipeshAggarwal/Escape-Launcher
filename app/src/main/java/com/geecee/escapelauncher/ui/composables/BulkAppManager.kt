@@ -38,15 +38,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.lumina.core.ui.theme.ContentColor
 import com.geecee.escapelauncher.utils.InstalledApp
+import com.lumina.domain.apps.AppInfo
 import kotlin.math.roundToInt
 
 @Composable
 fun BulkAppManager(
-    apps: List<InstalledApp>,
-    preSelectedApps: List<InstalledApp> = emptyList(),
+    apps: List<AppInfo>,
+    preSelectedApps: Set<String> = emptySet(),
     title: String,
     onBackClicked: () -> Unit,
-    onAppClicked: (app: InstalledApp, selected: Boolean) -> Unit,
+    onAppClicked: (app: AppInfo, selected: Boolean) -> Unit,
     reorderable: Boolean = false,
     hideTitle: Boolean = false,
     hideBack: Boolean = false,
@@ -54,17 +55,14 @@ fun BulkAppManager(
     topPadding: Boolean = true,
     onAppMoved: (fromIndex: Int, toIndex: Int) -> Unit = { _, _ -> }
 ) {
-    val selectedState =
-        remember { mutableStateListOf<InstalledApp>().apply { addAll(preSelectedApps) } }
+    val selectedState = remember {
+        mutableStateListOf<String>().apply { addAll(preSelectedApps) }
+    }
 
     val availableApps = remember(apps) {
         apps.filter { it.packageName != "com.geecee.escapelauncher" }
     }
 
-    // Move this outside the LazyColumn so it's only computed once when selectedState changes
-    val selectedPackageNames by remember {
-        derivedStateOf { selectedState.map { it.packageName }.toSet() }
-    }
 
     // Drag state for reorderable items
     var draggedPackageName by remember { mutableStateOf<String?>(null) }
@@ -75,12 +73,15 @@ fun BulkAppManager(
     // Create a combined list with a spacer marker
     val combinedItems by remember(apps) {
         derivedStateOf {
+            val selectedApps = apps.filter { it.packageName in selectedState }
+            val unselectedApps = apps.filter { it.packageName !in selectedState }
+
             buildList {
-                addAll(selectedState.map { ListItem.App(it, isInSelectedSection = true) })
+                addAll(selectedApps.map { ListItem.App(it, isInSelectedSection = true) })
                 if (selectedState.isNotEmpty()) {
                     add(ListItem.Spacer)
                 }
-                addAll(availableApps.map { ListItem.App(it, isInSelectedSection = false) })
+                addAll(unselectedApps.map { ListItem.App(it, isInSelectedSection = false) })
             }
         }
     }
@@ -108,15 +109,15 @@ fun BulkAppManager(
         ) { item ->
             when (item) {
                 is ListItem.App -> {
-                    val isSelected = selectedPackageNames.contains(item.app.packageName)
+                    val isSelected = item.app.packageName in selectedState
                     
                     val isTopOfGroup = if (item.isInSelectedSection) {
-                        selectedState.firstOrNull() == item.app
+                        selectedState.firstOrNull() == item.app.packageName
                     } else {
                         availableApps.firstOrNull() == item.app
                     }
                     val isBottomOfGroup = if (item.isInSelectedSection) {
-                        selectedState.lastOrNull() == item.app
+                        selectedState.lastOrNull() == item.app.packageName
                     } else {
                         availableApps.lastOrNull() == item.app
                     }
@@ -125,7 +126,7 @@ fun BulkAppManager(
                         val isDragging = draggedPackageName == item.app.packageName
                         
                         // Calculate drag limits
-                        val currentIndex = selectedState.indexOf(item.app)
+                        val currentIndex = selectedState.indexOf(item.app.packageName)
                         val maxDragUp = -currentIndex * measuredItemHeight.toFloat()
                         val maxDragDown = (selectedState.size - 1 - currentIndex) * measuredItemHeight.toFloat()
 
@@ -153,9 +154,9 @@ fun BulkAppManager(
                                 label = item.app.displayName,
                                 onClick = {
                                     if (isSelected) {
-                                        selectedState.remove(item.app)
+                                        selectedState.remove(item.app.packageName)
                                     } else {
-                                        selectedState.add(item.app)
+                                        selectedState.add(item.app.packageName)
                                     }
                                     onAppClicked(item.app, isSelected)
                                 },
@@ -180,7 +181,7 @@ fun BulkAppManager(
                                                 val threshold = itemHeight / 2
 
                                                 val currentPkg = draggedPackageName ?: return@detectVerticalDragGestures
-                                                val fromIndex = selectedState.indexOfFirst { it.packageName == currentPkg }
+                                                val fromIndex = selectedState.indexOfFirst { it == currentPkg }
                                                 if (fromIndex == -1) return@detectVerticalDragGestures
 
                                                 if (dragOffset > threshold && fromIndex < selectedState.size - 1) {
@@ -222,9 +223,9 @@ fun BulkAppManager(
                             label = item.app.displayName,
                             onClick = {
                                 if (isSelected) {
-                                    selectedState.remove(item.app)
+                                    selectedState.remove(item.app.packageName)
                                 } else {
-                                    selectedState.add(item.app)
+                                    selectedState.add(item.app.packageName)
                                 }
                                 onAppClicked(item.app, isSelected)
                             },
@@ -257,6 +258,6 @@ fun BulkAppManager(
 }
 
 private sealed class ListItem {
-    data class App(val app: InstalledApp, val isInSelectedSection: Boolean) : ListItem()
+    data class App(val app: AppInfo, val isInSelectedSection: Boolean) : ListItem()
     object Spacer : ListItem()
 }

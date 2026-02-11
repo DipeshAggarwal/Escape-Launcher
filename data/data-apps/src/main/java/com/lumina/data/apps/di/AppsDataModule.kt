@@ -10,7 +10,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class AppsDataModule {
+abstract class HiddenAppsDataModule {
     @Binds
     @Singleton
     abstract fun bindsHiddenDataStore(hiddenAppsRepository: DataStoreHiddenAppsRepository): HiddenAppsRepository

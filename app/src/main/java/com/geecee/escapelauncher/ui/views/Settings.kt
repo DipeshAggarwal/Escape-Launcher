@@ -55,6 +55,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
@@ -63,6 +64,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -130,6 +132,7 @@ import com.geecee.escapelauncher.utils.showLauncherSettingsMenu
 import com.geecee.escapelauncher.utils.toggleBooleanSetting
 import com.lumina.core.common.AppDefaults.DEFAULT_THEME
 import com.lumina.core.common.FeatureFlags.USE_NEW_APP_HIDING
+import com.lumina.feature.apphiding.AppHidingViewModel
 import com.lumina.feature.apphiding.ui.APP_HIDING_ROUTE
 import com.lumina.feature.apphiding.ui.appHidingNavigation
 import kotlinx.coroutines.delay
@@ -167,7 +170,10 @@ fun Settings(
     ) {
 
         val navController = rememberNavController()
-        val installedApps by homeScreenModel.installedApps.collectAsState(emptyList())
+        val viewModel: AppHidingViewModel = hiltViewModel()
+
+        val installedApps by viewModel.installedApps.collectAsState(emptyList())
+        val hiddenAppsList by viewModel.hiddenApps.collectAsState(emptyList())
 
         NavHost(navController = navController, "mainSettingsPage") {
             composable(
@@ -190,7 +196,6 @@ fun Settings(
                 exitTransition = { fadeOut(tween(300)) }) {
                 HiddenApps(
                     mainAppModel = mainAppModel,
-                    homeScreenModel = homeScreenModel,
                     mainAppModel.spacerSize,
                     goToManageHiddenApps = {
                         navController.navigate("bulkHiddenApps")
@@ -203,12 +208,12 @@ fun Settings(
                 exitTransition = { fadeOut(tween(300)) }) {
                 val challengeApps = remember(mainAppModel.challengesTrigger.intValue) {
                     val currentChallenges = mainAppModel.challengesManager.getChallengeApps()
-                    homeScreenModel.installedApps.value.filter { it.packageName in currentChallenges }
+                    installedApps.filter { it.packageName in currentChallenges }
                 }
 
                 BulkAppManager(
                     apps = installedApps,
-                    preSelectedApps = challengeApps,
+                    preSelectedApps = challengeApps.map { it.packageName }.toSet(),
                     title = stringResource(R.string.manage_open_challenges),
                     onBackClicked = { navController.popBackStack() },
                     onAppClicked = { app, selected ->
@@ -257,27 +262,23 @@ fun Settings(
                 }
             }
             composable(
+
                 "bulkHiddenApps",
                 enterTransition = { fadeIn(tween(300)) },
                 exitTransition = { fadeOut(tween(300)) }) {
-                val hiddenAppsList = remember(mainAppModel.hiddenAppsTrigger.intValue) {
-                    val currentHidden = mainAppModel.hiddenAppsManager.getHiddenApps()
-                    homeScreenModel.installedApps.value.filter { it.packageName in currentHidden }
-                }
 
                 BulkAppManager(
                     apps = installedApps,
-                    preSelectedApps = hiddenAppsList,
+                    preSelectedApps = hiddenAppsList.map { it.packageName }.toSet(),
                     title = stringResource(R.string.manage_hidden_apps),
                     onBackClicked = { navController.popBackStack() },
                     onAppClicked = { app, selected ->
                         if (selected) {
-                            mainAppModel.hiddenAppsManager.removeHiddenApp(app.packageName)
+                            viewModel.unhideApp(app.packageName)
                         } else {
-                            mainAppModel.hiddenAppsManager.addHiddenApp(app.packageName)
+                            viewModel.hideApp(app.packageName)
                             resetHome(homeScreenModel, false)
                         }
-                        mainAppModel.notifyHiddenAppsChanged()
                     })
             }
             appHidingNavigation { navController.popBackStack() }
@@ -294,7 +295,7 @@ fun Settings(
 
                 BulkAppManager(
                     apps = installedApps,
-                    preSelectedApps = preSelectedFavoriteApps,
+                    preSelectedApps = preSelectedFavoriteApps.map { it.packageName }.toSet(),
                     title = stringResource(R.string.manage_favourite_apps),
                     reorderable = true,
                     onAppMoved = { fromIndex, toIndex ->
@@ -1348,14 +1349,16 @@ fun WidgetOptions(context: Context, spacerSize: Float, goBack: () -> Unit) {
 @Composable
 fun HiddenApps(
     mainAppModel: MainAppModel,
-    homeScreenModel: HomeScreenModel,
     spacerSize: Float,
     goToManageHiddenApps: () -> Unit,
     goBack: () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
     val haptics = LocalHapticFeedback.current
-    var hiddenAppsList by remember { mutableStateOf(mainAppModel.hiddenAppsManager.getHiddenApps()) }
+    val context = LocalContext.current
+
+    val viewModel: AppHidingViewModel = hiltViewModel()
+    val hiddenAppsList by viewModel.hiddenApps.collectAsState(emptyList())
 
     LazyColumn(
         verticalArrangement = Arrangement.Top,
@@ -1401,8 +1404,8 @@ fun HiddenApps(
 
         items(
             items = hiddenAppsList,
-            key = { it } // use package name as unique key
-        ) { appPackageName ->
+            key = { app -> app.packageName }
+        ) { app ->
             // Animate the removal of the item
             var visible by remember { mutableStateOf(true) }
 
@@ -1411,45 +1414,22 @@ fun HiddenApps(
                 exit = fadeOut(animationSpec = tween(500))
             ) {
                 SettingsSwipeableButton(
-                    label = AppUtils.getAppNameFromPackageName(
-                        mainAppModel.getContext(),
-                        appPackageName
-                    ),
+                    label = app.displayName,
                     onClick = {
-                        val app =
-                            homeScreenModel.installedApps.value.find { it.packageName == appPackageName }
-                                ?: AppUtils.getInstalledAppFromPackageName(
-                                    mainAppModel.getContext(),
-                                    appPackageName
-                                )
-
-                        app?.let {
-                            AppUtils.openApp(
-                                app = it,
-                                overrideOpenChallenge = false,
-                                openChallengeShow = homeScreenModel.showOpenChallenge,
-                                mainAppModel = mainAppModel,
-                                homeScreenModel = homeScreenModel
-                            )
-                        }
-
-                        resetHome(homeScreenModel)
+                        viewModel.launchApp(context, app.packageName)
                     },
                     onDeleteClick = {
-                        // Trigger haptic feedback
                         AppUtils.doHapticFeedBack(haptics)
-                        // Animate item out
+
                         visible = false
                         // Remove from your list after a short delay to let animation run
                         coroutineScope.launch {
                             delay(500)
-                            mainAppModel.hiddenAppsManager.removeHiddenApp(appPackageName)
-                            mainAppModel.notifyHiddenAppsChanged()
-                            hiddenAppsList = mainAppModel.hiddenAppsManager.getHiddenApps()
+                            viewModel.unhideApp(app.packageName)
                         }
                     },
-                    isTopOfGroup = hiddenAppsList.firstOrNull() == appPackageName,
-                    isBottomOfGroup = hiddenAppsList.lastOrNull() == appPackageName
+                    isTopOfGroup = hiddenAppsList.firstOrNull() == app,
+                    isBottomOfGroup = hiddenAppsList.lastOrNull() == app
                 )
             }
         }
