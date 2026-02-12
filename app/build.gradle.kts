@@ -128,8 +128,10 @@ dependencies {
     implementation(project(":core:core-ui"))
 
     implementation(project(":data:data-apps"))
+    implementation(project(":data:data-settings"))
 
     implementation(project(":domain:domain-apps"))
+    implementation(project(":domain:domain-settings"))
 
     implementation(project(":features:features-apphiding"))
 
@@ -143,7 +145,6 @@ dependencies {
     // Material Design and UI Libraries
     implementation(libs.google.material)
     implementation(libs.androidx.compose.material3)
-    implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
@@ -151,6 +152,7 @@ dependencies {
     implementation(libs.androidx.compose.material.icons.core)
     implementation(libs.androidx.compose.material.icons.extended)
 
+    implementation(platform(libs.androidx.compose.bom))
 
     // Lifecycle and Activity Libraries
     implementation(libs.androidx.lifecycle.runtime)

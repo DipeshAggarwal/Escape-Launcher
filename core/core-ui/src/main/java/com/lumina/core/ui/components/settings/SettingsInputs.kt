@@ -1,0 +1,258 @@
+package com.lumina.core.ui.components.settings
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.material3.Slider
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import com.lumina.core.ui.R
+import com.lumina.core.ui.components.text.AutoResizingText
+import com.lumina.core.ui.theme.CardContainerColor
+import com.lumina.core.ui.theme.ContentColor
+import com.lumina.core.ui.theme.LuminaCardDefaults
+
+private object SettingsSliderDefaults {
+    const val SLIDER_WEIGHT = 1.5f
+
+    val SliderHorizontalPadding = 16.dp
+    val ResetIconSize = 40.dp
+}
+
+private object SettingsSegmentedButtonsDefaults {
+    const val SEGMENTED_ROW_WEIGHT = 4f
+    val RowStartPadding = 16.dp
+}
+
+/**
+ * Switch for setting with a label on the left
+ *
+ * @param label The text for the label
+ * @param checked Whether the switch is on or not
+ * @param onCheckedChange Function with Boolean passed that's executed when the switch is pressed
+ */
+@Composable
+fun SettingsSwitch(
+    label: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    isTopOfGroup: Boolean = false,
+    isBottomOfGroup: Boolean = false
+) {
+    var isChecked by remember { mutableStateOf(checked) }
+
+    val currentShape = settingsGroupShape(
+        isTopOfGroup = isTopOfGroup,
+        isBottomOfGroup = isBottomOfGroup
+    )
+
+    Card(
+        modifier = Modifier
+            .padding(vertical = SettingsDefaults.VerticalPadding )
+            .clip(currentShape)
+            .clickable {
+                isChecked = !isChecked
+                onCheckedChange(isChecked)
+            },shape = currentShape,
+        colors = LuminaCardDefaults.colors()
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    horizontal = SettingsDefaults.HorizontalPadding,
+                    vertical = SettingsDefaults.VerticalContentPadding
+                )
+                .height(SettingsDefaults.ContentHeight), verticalAlignment = Alignment.CenterVertically
+        ) {
+            AutoResizingText(
+                text = label,
+                modifier = Modifier
+                    .weight(SettingsDefaults.TEXT_WEIGHT)
+                    .padding(end = SettingsDefaults.TextIconSpacing), // Add space between text and switch
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Switch(
+                checked = isChecked, onCheckedChange = {
+                    isChecked = it
+                    onCheckedChange(isChecked)
+                })
+        }
+    }
+}
+
+/**
+ * A setting item with a label on the left, a Slider in the middle, and a reset Icon on the right.
+ * Visually styled to match SettingsSingleChoiceSegmentedButtons.
+ *
+ * @param label The text for the label displayed to the left of the slider.
+ * @param value The current value of the slider.
+ * @param onValueChange Callback that is invoked when the slider's value changes.
+ * @param valueRange The range of values that the slider can take.
+ * @param steps The number of discrete steps the slider can snap to between the min and max values.
+ * @param onReset Callback that is invoked when the reset icon is clicked.
+ * @param modifier Optional [Modifier] for this composable.
+ * @param isTopOfGroup Whether this item is the first in a group of settings, for corner rounding.
+ * @param isBottomOfGroup Whether this item is the last in a group of settings, for corner rounding.
+ */
+@Composable
+fun SettingsSlider(
+    label: String,
+    value: Float,
+    onValueChange: (Float) -> Unit,
+    valueRange: ClosedFloatingPointRange<Float>,
+    steps: Int,
+    onReset: () -> Unit,
+    modifier: Modifier = Modifier,
+    isTopOfGroup: Boolean = false,
+    isBottomOfGroup: Boolean = false
+) {
+    val currentShape = settingsGroupShape(
+        isTopOfGroup = isTopOfGroup,
+        isBottomOfGroup = isBottomOfGroup
+    )
+
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = SettingsDefaults.VerticalPadding),
+        shape = currentShape,
+        colors = LuminaCardDefaults.colors()
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    horizontal = SettingsDefaults.HorizontalPadding,
+                    vertical = SettingsDefaults.VerticalContentPadding
+                ),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            AutoResizingText(
+                text = label,
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.weight(SettingsDefaults.TEXT_WEIGHT)
+            )
+
+            Slider(
+                value = value,
+                onValueChange = onValueChange,
+                valueRange = valueRange,
+                steps = steps,
+                modifier = Modifier
+                    .weight(SettingsSliderDefaults.SLIDER_WEIGHT)
+                    .padding(horizontal = SettingsSliderDefaults.SliderHorizontalPadding)
+            )
+
+            Icon(
+                imageVector = Icons.Default.Refresh,
+                contentDescription = stringResource(R.string.reset_to_default),
+                modifier = Modifier
+                    .size(SettingsSliderDefaults.ResetIconSize)
+                    .padding(start = SettingsDefaults.TextIconSpacing)
+                    .clickable(onClick = onReset),
+                tint = ContentColor,
+            )
+        }
+    }
+}
+
+/**
+ * A setting item with a label on the left and a SingleChoiceSegmentedButtonRow on the right.
+ *
+ * @param label The text for the label.
+ * @param options A list of strings representing the choices for the segmented buttons.
+ * @param selectedIndex The currently selected index in the options list.
+ * @param onSelectedIndexChange Callback that is invoked when the selection changes.
+ * @param isTopOfGroup Whether this item is the first in a group of settings.
+ * @param isBottomOfGroup Whether this item is the last in a group of settings.
+ */
+@Composable
+fun SettingsSingleChoiceSegmentedButtons(
+    label: String,
+    options: List<String>,
+    selectedIndex: Int,
+    onSelectedIndexChange: (Int) -> Unit,
+    isTopOfGroup: Boolean = false,
+    isBottomOfGroup: Boolean = false
+) {
+    var currentSelectedIndex by remember { mutableIntStateOf(selectedIndex) }
+
+    val currentShape = settingsGroupShape(
+        isTopOfGroup = isTopOfGroup,
+        isBottomOfGroup = isBottomOfGroup
+    )
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = SettingsDefaults.VerticalPadding),
+        shape = currentShape,
+        colors = LuminaCardDefaults.colors()
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    horizontal = SettingsDefaults.HorizontalPadding,
+                    vertical = SettingsDefaults.VerticalContentPadding
+                ),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            AutoResizingText(
+                text = label,
+                modifier = Modifier.weight(SettingsDefaults.TEXT_WEIGHT)
+            )
+
+            SingleChoiceSegmentedButtonRow(
+                modifier = Modifier
+                    .padding(start = SettingsSegmentedButtonsDefaults.RowStartPadding)
+                    .weight(SettingsSegmentedButtonsDefaults.SEGMENTED_ROW_WEIGHT)
+            ) {
+                options.forEachIndexed { index, optionLabel ->
+                    SegmentedButton(
+                        shape = SegmentedButtonDefaults.itemShape(
+                            index = index, count = options.size
+                        ), onClick = {
+                            currentSelectedIndex = index
+                            onSelectedIndexChange(index)
+                        }, selected = index == currentSelectedIndex
+                    ) {
+                        Text(
+                            text = optionLabel,
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = SettingsDefaults.MAX_LINES
+                        )
+                    }
+                }
+            }
+        }
+    }
+}

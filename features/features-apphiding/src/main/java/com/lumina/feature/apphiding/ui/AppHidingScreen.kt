@@ -21,6 +21,7 @@ fun AppHidingScreen(
     viewModel: AppHidingViewModel = hiltViewModel()
 ) {
     val hiddenApps by viewModel.hiddenApps.collectAsState()
+
     LazyColumn(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start,

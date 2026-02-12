@@ -27,7 +27,6 @@ import androidx.core.graphics.createBitmap
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import appThemeFromStorage
 import com.geecee.escapelauncher.HomeScreenModel
 import com.geecee.escapelauncher.R
 import com.geecee.escapelauncher.ui.theme.getFontFamily
@@ -35,12 +34,13 @@ import com.lumina.core.ui.theme.EscapeTheme
 import com.geecee.escapelauncher.utils.managers.ScreenTimeManager
 import com.lumina.core.common.AppDefaults.DEFAULT_FONT
 import com.lumina.core.common.AppDefaults.DEFAULT_THEME
-import com.lumina.core.ui.theme.AppTheme
+import com.lumina.core.common.AppTheme
+import com.lumina.data.settings.appThemeFromStorage
+import com.lumina.domain.settings.toStorageValue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import toStorageValue
 import java.io.IOException
 import java.io.InputStream
 import java.text.Normalizer

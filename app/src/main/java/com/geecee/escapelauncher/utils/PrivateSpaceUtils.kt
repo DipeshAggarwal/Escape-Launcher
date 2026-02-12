@@ -40,7 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.net.toUri
 import com.geecee.escapelauncher.R
-import com.geecee.escapelauncher.ui.composables.SettingsSwitch
+import com.lumina.core.ui.components.settings.SettingsSwitch
 import com.lumina.core.ui.theme.ContentColor
 import com.lumina.core.ui.theme.transparentHalf
 

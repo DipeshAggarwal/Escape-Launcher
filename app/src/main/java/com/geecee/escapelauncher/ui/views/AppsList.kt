@@ -38,7 +38,6 @@ import com.geecee.escapelauncher.ui.composables.AppsListHeader
 import com.geecee.escapelauncher.ui.composables.HomeScreenItem
 import com.geecee.escapelauncher.ui.composables.ListGradient
 import com.geecee.escapelauncher.ui.composables.PrivateSpace
-import com.geecee.escapelauncher.ui.composables.SettingsSpacer
 import com.geecee.escapelauncher.ui.composables.WorkApps
 import com.geecee.escapelauncher.ui.composables.WorkAppsFab
 import com.lumina.core.ui.theme.transparentHalf
@@ -54,6 +53,7 @@ import com.geecee.escapelauncher.utils.getAppsAlignment
 import com.geecee.escapelauncher.utils.getBooleanSetting
 import com.geecee.escapelauncher.utils.launchSecureFolder
 import com.geecee.escapelauncher.utils.unlockPrivateSpace
+import com.lumina.core.ui.components.settings.SettingsSpacer
 import kotlinx.coroutines.flow.MutableStateFlow
 import com.geecee.escapelauncher.MainAppViewModel as MainAppModel
 import com.geecee.escapelauncher.utils.isPrivateSpaceUnlocked as isPrivateSpace

@@ -72,9 +72,7 @@ import com.geecee.escapelauncher.BuildConfig
 import com.geecee.escapelauncher.HomeScreenModel
 import com.geecee.escapelauncher.MainAppViewModel
 import com.geecee.escapelauncher.R
-import com.geecee.escapelauncher.ui.composables.AutoResizingText
 import com.geecee.escapelauncher.ui.composables.BulkAppManager
-import com.geecee.escapelauncher.ui.composables.SettingsSpacer
 import com.lumina.core.ui.theme.BackgroundColor
 import com.lumina.core.ui.theme.CardContainerColor
 import com.lumina.core.ui.theme.primaryContentColor
@@ -84,6 +82,8 @@ import com.geecee.escapelauncher.utils.getBooleanSetting
 import com.geecee.escapelauncher.utils.isDefaultLauncher
 import com.geecee.escapelauncher.utils.setBooleanSetting
 import com.geecee.escapelauncher.utils.showLauncherSelector
+import com.lumina.core.ui.components.settings.SettingsSpacer
+import com.lumina.core.ui.components.text.AutoResizingText
 import com.lumina.feature.apphiding.AppHidingViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

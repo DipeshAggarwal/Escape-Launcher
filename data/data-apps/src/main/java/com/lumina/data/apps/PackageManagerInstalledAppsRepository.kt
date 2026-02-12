@@ -1,6 +1,7 @@
 package com.lumina.data.apps
 
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import com.lumina.core.logging.Logger
 import com.lumina.domain.apps.AppInfo
@@ -26,11 +27,19 @@ class PackageManagerInstalledAppsRepository @Inject constructor(
     }
 
     override suspend fun getInstalledApps(): List<AppInfo> {
-        val apps = pm.getInstalledApplications(PackageManager.GET_META_DATA)
+        val intent = Intent(Intent.ACTION_MAIN).apply {
+            addCategory(Intent.CATEGORY_LAUNCHER)
+        }
+        val resolveInfo = pm.queryIntentActivities(intent, 0)
 
-        return apps.map {
-            val label = pm.getApplicationLabel(it).toString()
-            AppInfo(it.packageName, label)
-        }.sortedBy { it.displayName.lowercase() }
+        return resolveInfo.map {
+            val packageName = it.activityInfo.packageName
+            val label = it.loadLabel(pm).toString()
+
+            AppInfo(packageName, label)
+        }
+        .filterNot { it.packageName == context.packageName }
+        .distinctBy { it.packageName } // Some apps expose multiple launchable activities
+        .sortedBy { it.displayName.lowercase() }
     }
 }

@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lumina.core.common.FlowDefaults.WhileSubscribedTimeoutMillis
 import com.lumina.domain.apps.AppInfo
 import com.lumina.domain.apps.HiddenAppsRepository
 import com.lumina.domain.apps.InstalledAppsRepository
@@ -27,7 +28,7 @@ class AppHidingViewModel @Inject constructor(
         emit(installedAppsRepository.getInstalledApps())
     }.stateIn(
         viewModelScope,
-        SharingStarted.WhileSubscribed(5000),
+        SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMillis),
         emptyList()
     )
     val hiddenApps: StateFlow<List<AppInfo>> = hiddenAppsRepository.allHiddenApps()
@@ -47,14 +48,14 @@ class AppHidingViewModel @Inject constructor(
             }
         }.stateIn(
             viewModelScope,
-            SharingStarted.WhileSubscribed(5000),
+            SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMillis),
             emptyList()
         )
 
     val hiddenPackagesSet: StateFlow<Set<String>> = hiddenAppsRepository.allHiddenApps()
         .stateIn(
             viewModelScope,
-            SharingStarted.WhileSubscribed(5000),
+            SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMillis),
             emptySet()
         )
 

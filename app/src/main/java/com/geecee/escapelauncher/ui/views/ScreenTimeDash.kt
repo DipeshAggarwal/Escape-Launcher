@@ -32,12 +32,12 @@ import com.geecee.escapelauncher.ui.composables.AppUsages
 import com.geecee.escapelauncher.ui.composables.DaySpent
 import com.geecee.escapelauncher.ui.composables.HigherRec
 import com.geecee.escapelauncher.ui.composables.ScreenTime
-import com.geecee.escapelauncher.ui.composables.SettingsSpacer
 import com.lumina.core.ui.theme.ContentColor
 import com.geecee.escapelauncher.utils.AppUtils
 import com.geecee.escapelauncher.utils.managers.AppUsageEntity
 import com.geecee.escapelauncher.utils.managers.getScreenTimeListSorted
 import com.geecee.escapelauncher.utils.managers.getTotalUsageForDate
+import com.lumina.core.ui.components.settings.SettingsSpacer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat

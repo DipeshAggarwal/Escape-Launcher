@@ -18,6 +18,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontFamily
+import com.lumina.core.common.AppTheme
 
 
 val PitchDarkColorScheme = darkColorScheme(
@@ -545,27 +546,6 @@ fun EscapeTheme(
     MaterialTheme(
         colorScheme = colorScheme, typography = typography, content = content
     )
-}
-
-enum class AppTheme {
-    DARK,
-    LIGHT,
-    PITCH_DARK,
-
-    LIGHT_RED,
-    DARK_RED,
-
-    LIGHT_GREEN,
-    DARK_GREEN,
-
-    LIGHT_BLUE,
-    DARK_BLUE,
-
-    LIGHT_YELLOW,
-    DARK_YELLOW,
-
-    OFF_LIGHT,
-    SYSTEM
 }
 
 @Composable

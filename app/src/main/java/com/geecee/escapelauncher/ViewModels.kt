@@ -22,7 +22,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.lumina.core.ui.theme.AppTheme
 import com.geecee.escapelauncher.utils.AppUtils
 import com.geecee.escapelauncher.utils.InstalledApp
 import com.geecee.escapelauncher.utils.getBooleanSetting
@@ -34,6 +33,7 @@ import com.geecee.escapelauncher.utils.managers.getUsageForApp
 import com.geecee.escapelauncher.utils.managers.setSpacerSize
 import com.geecee.escapelauncher.utils.weatherProxy
 import com.lumina.core.common.AppDefaults.DEFAULT_THEME
+import com.lumina.core.common.AppTheme
 import com.lumina.core.common.TextUtils.UNACCENT_REGEX
 import com.lumina.domain.apps.HiddenAppsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel

@@ -38,6 +38,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.lumina.core.ui.theme.ContentColor
 import com.geecee.escapelauncher.utils.InstalledApp
+import com.lumina.core.ui.components.settings.SettingsButton
+import com.lumina.core.ui.components.settings.SettingsHeader
+import com.lumina.core.ui.components.settings.SettingsSpacer
 import com.lumina.domain.apps.AppInfo
 import kotlin.math.roundToInt
 
