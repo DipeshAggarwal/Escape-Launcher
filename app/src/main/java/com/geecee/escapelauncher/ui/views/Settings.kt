@@ -119,7 +119,6 @@ import com.geecee.escapelauncher.utils.showLauncherSettingsMenu
 import com.geecee.escapelauncher.utils.toggleBooleanSetting
 import com.lumina.core.common.AppDefaults.DEFAULT_THEME
 import com.lumina.core.common.AppTheme
-import com.lumina.core.common.FeatureFlags.USE_NEW_APP_HIDING
 import com.lumina.core.ui.components.settings.SettingsButton
 import com.lumina.core.ui.components.settings.SettingsHeader
 import com.lumina.core.ui.components.settings.SettingsNavigationItem
@@ -735,13 +734,7 @@ fun MainSettingsPage(
                 label = stringResource(id = R.string.manage_hidden_apps),
                 false,
                 isTopOfGroup = true,
-                onClick = {
-                    if (USE_NEW_APP_HIDING) {
-                        navController.navigate(APP_HIDING_ROUTE)
-                    } else {
-                        navController.navigate("hiddenApps")
-                    }
-                }
+                onClick = { navController.navigate(APP_HIDING_ROUTE) }
             )
         }
 
