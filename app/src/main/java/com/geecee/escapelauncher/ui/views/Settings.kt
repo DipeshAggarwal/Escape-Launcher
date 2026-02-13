@@ -72,7 +72,7 @@ import androidx.navigation.compose.rememberNavController
 import com.geecee.escapelauncher.BuildConfig
 import com.geecee.escapelauncher.HomeScreenModel
 import com.geecee.escapelauncher.R
-import com.lumina.features.apppicker.BulkAppManager
+import com.lumina.features.apppicker.AppPickerScreen
 import com.geecee.escapelauncher.ui.composables.SponsorBox
 import com.geecee.escapelauncher.ui.composables.WeatherAppPicker
 import com.lumina.core.ui.theme.CardContainerColor
@@ -211,8 +211,9 @@ fun Settings(
                     installedApps.filter { it.packageName in currentChallenges }
                 }
 
-                BulkAppManager(
+                AppPickerScreen(
                     apps = installedApps,
+                    launcherPackageName = BuildConfig.APPLICATION_ID,
                     preSelectedApps = challengeApps.map { it.packageName }.toSet(),
                     title = stringResource(R.string.manage_open_challenges),
                     onBackClicked = { navController.popBackStack() },
@@ -267,8 +268,9 @@ fun Settings(
                 enterTransition = { fadeIn(tween(300)) },
                 exitTransition = { fadeOut(tween(300)) }) {
 
-                BulkAppManager(
+                AppPickerScreen(
                     apps = installedApps,
+                    launcherPackageName = BuildConfig.APPLICATION_ID,
                     preSelectedApps = hiddenAppsList.map { it.packageName }.toSet(),
                     title = stringResource(R.string.manage_hidden_apps),
                     onBackClicked = { navController.popBackStack() },
@@ -293,8 +295,9 @@ fun Settings(
                     }
                 }
 
-                BulkAppManager(
+                AppPickerScreen(
                     apps = installedApps,
+                    launcherPackageName = BuildConfig.APPLICATION_ID,
                     preSelectedApps = preSelectedFavoriteApps.map { it.packageName }.toSet(),
                     title = stringResource(R.string.manage_favourite_apps),
                     reorderable = true,

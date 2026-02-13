@@ -38,14 +38,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.lumina.core.ui.theme.ContentColor
 import com.lumina.core.ui.components.settings.SettingsButton
+import com.lumina.core.ui.components.settings.SettingsDefaults.TEXT_WEIGHT
 import com.lumina.core.ui.components.settings.SettingsHeader
 import com.lumina.core.ui.components.settings.SettingsSpacer
 import com.lumina.domain.apps.AppInfo
 import kotlin.math.roundToInt
 
 @Composable
-fun BulkAppManager(
+fun AppPickerScreen (
     apps: List<AppInfo>,
+    launcherPackageName: String,
     preSelectedApps: Set<String> = emptySet(),
     title: String,
     onBackClicked: () -> Unit,
@@ -62,7 +64,7 @@ fun BulkAppManager(
     }
 
     val availableApps = remember(apps) {
-        apps.filter { it.packageName != "com.geecee.escapelauncher" }
+        apps.filter { it.packageName != launcherPackageName }
     }
 
 
@@ -112,7 +114,7 @@ fun BulkAppManager(
             when (item) {
                 is ListItem.App -> {
                     val isSelected = item.app.packageName in selectedState
-                    
+
                     val isTopOfGroup = if (item.isInSelectedSection) {
                         selectedState.firstOrNull() == item.app.packageName
                     } else {
@@ -126,7 +128,7 @@ fun BulkAppManager(
 
                     if (item.isInSelectedSection && reorderable) {
                         val isDragging = draggedPackageName == item.app.packageName
-                        
+
                         // Calculate drag limits
                         val currentIndex = selectedState.indexOf(item.app.packageName)
                         val maxDragUp = -currentIndex * measuredItemHeight.toFloat()
@@ -164,7 +166,7 @@ fun BulkAppManager(
                                 },
                                 isTopOfGroup = isTopOfGroup,
                                 isBottomOfGroup = isBottomOfGroup,
-                                modifier = Modifier.weight(1f)
+                                modifier = Modifier.weight(TEXT_WEIGHT)
                             )
                             Box(
                                 modifier = Modifier
