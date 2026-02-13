@@ -72,7 +72,7 @@ import com.geecee.escapelauncher.BuildConfig
 import com.geecee.escapelauncher.HomeScreenModel
 import com.geecee.escapelauncher.MainAppViewModel
 import com.geecee.escapelauncher.R
-import com.lumina.features.apppicker.AppPickerScreen
+import com.lumina.feature.apppicker.AppPickerScreen
 import com.lumina.core.ui.theme.BackgroundColor
 import com.lumina.core.ui.theme.CardContainerColor
 import com.lumina.core.ui.theme.primaryContentColor

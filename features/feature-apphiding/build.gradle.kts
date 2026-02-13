@@ -4,6 +4,10 @@ plugins {
     alias(libs.plugins.ksp)
 }
 
+android {
+    namespace = "com.lumina.feature.apphiding"
+}
+
 dependencies {
     implementation(libs.androidx.lifecycle.runtime)
     implementation(libs.androidx.hilt.navigation.compose)
@@ -14,4 +18,6 @@ dependencies {
     implementation(project(":core:core-ui"))
 
     implementation(project(":domain:domain-apps"))
+
+    implementation(project(":features:feature-apppicker"))
 }

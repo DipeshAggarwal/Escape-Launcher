@@ -1,4 +1,4 @@
-package com.lumina.features.apppicker
+package com.lumina.feature.apppicker
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically

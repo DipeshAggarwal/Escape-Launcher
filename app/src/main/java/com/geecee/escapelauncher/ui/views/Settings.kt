@@ -72,7 +72,7 @@ import androidx.navigation.compose.rememberNavController
 import com.geecee.escapelauncher.BuildConfig
 import com.geecee.escapelauncher.HomeScreenModel
 import com.geecee.escapelauncher.R
-import com.lumina.features.apppicker.AppPickerScreen
+import com.lumina.feature.apppicker.AppPickerScreen
 import com.geecee.escapelauncher.ui.composables.SponsorBox
 import com.geecee.escapelauncher.ui.composables.WeatherAppPicker
 import com.lumina.core.ui.theme.CardContainerColor
@@ -81,7 +81,6 @@ import com.geecee.escapelauncher.ui.theme.getFontFamily
 import com.lumina.core.ui.theme.resolveColorScheme
 import com.geecee.escapelauncher.utils.AppUtils
 import com.geecee.escapelauncher.utils.AppUtils.loadTextFromAssets
-import com.geecee.escapelauncher.utils.AppUtils.resetHome
 import com.geecee.escapelauncher.utils.CustomWidgetPicker
 import com.geecee.escapelauncher.utils.EscapeAccessibilityService
 import com.geecee.escapelauncher.utils.WIDGET_HOST_ID
@@ -173,7 +172,6 @@ fun Settings(
         val viewModel: AppHidingViewModel = hiltViewModel()
 
         val installedApps by viewModel.installedApps.collectAsState(emptyList())
-        val hiddenAppsList by viewModel.hiddenApps.collectAsState(emptyList())
 
         NavHost(navController = navController, "mainSettingsPage") {
             composable(
@@ -268,22 +266,11 @@ fun Settings(
                 enterTransition = { fadeIn(tween(300)) },
                 exitTransition = { fadeOut(tween(300)) }) {
 
-                AppPickerScreen(
-                    apps = installedApps,
-                    launcherPackageName = BuildConfig.APPLICATION_ID,
-                    preSelectedApps = hiddenAppsList.map { it.packageName }.toSet(),
-                    title = stringResource(R.string.manage_hidden_apps),
-                    onBackClicked = { navController.popBackStack() },
-                    onAppClicked = { app, selected ->
-                        if (selected) {
-                            viewModel.unhideApp(app.packageName)
-                        } else {
-                            viewModel.hideApp(app.packageName)
-                            resetHome(homeScreenModel, false)
-                        }
-                    })
+
             }
-            appHidingNavigation { navController.popBackStack() }
+            appHidingNavigation(BuildConfig.APPLICATION_ID) {
+                navController.popBackStack()
+            }
             composable(
                 "bulkFavouriteApps",
                 enterTransition = { fadeIn(tween(300)) },

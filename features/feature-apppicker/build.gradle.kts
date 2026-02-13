@@ -2,6 +2,10 @@ plugins {
     id("convention.android.library")
 }
 
+android {
+    namespace = "com.lumina.feature.apppicker"
+}
+
 dependencies {
     implementation(libs.androidx.compose.material.icons.extended)
 
