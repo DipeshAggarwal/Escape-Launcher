@@ -1,4 +1,4 @@
-package com.geecee.escapelauncher.ui.composables
+package com.lumina.features.apppicker
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -37,7 +37,6 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.lumina.core.ui.theme.ContentColor
-import com.geecee.escapelauncher.utils.InstalledApp
 import com.lumina.core.ui.components.settings.SettingsButton
 import com.lumina.core.ui.components.settings.SettingsHeader
 import com.lumina.core.ui.components.settings.SettingsSpacer

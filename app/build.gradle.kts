@@ -134,6 +134,7 @@ dependencies {
     implementation(project(":domain:domain-settings"))
 
     implementation(project(":features:features-apphiding"))
+    implementation(project(":features:features-apppicker"))
 
     // Core Android Libraries
     implementation(libs.androidx.core.ktx)

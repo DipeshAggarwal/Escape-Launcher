@@ -72,7 +72,7 @@ import androidx.navigation.compose.rememberNavController
 import com.geecee.escapelauncher.BuildConfig
 import com.geecee.escapelauncher.HomeScreenModel
 import com.geecee.escapelauncher.R
-import com.geecee.escapelauncher.ui.composables.BulkAppManager
+import com.lumina.features.apppicker.BulkAppManager
 import com.geecee.escapelauncher.ui.composables.SponsorBox
 import com.geecee.escapelauncher.ui.composables.WeatherAppPicker
 import com.lumina.core.ui.theme.CardContainerColor
