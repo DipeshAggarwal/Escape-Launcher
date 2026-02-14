@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.dp
 import com.lumina.core.common.AppTheme
 import com.lumina.core.ui.R
 import com.lumina.core.ui.theme.displayNameRes
-import com.lumina.core.ui.theme.resolveColorScheme
+import com.lumina.core.ui.theme.resolveColorSeed
 import com.lumina.core.ui.theme.transparentHalf
 
 private object ThemeCardDefaults {
@@ -55,7 +55,7 @@ private object ThemeCardDefaults {
  *
  * @param theme The theme ID number (see: Theme.kt)
  *
- * @see com.lumina.core.ui.theme.EscapeTheme
+ * @see com.lumina.core.ui.theme.RiktaTheme
  */
 @Composable
 fun ThemeCard(
@@ -84,7 +84,7 @@ fun ThemeCard(
                 .clickable {
                     onClick(theme)
                 }
-                .background(theme.resolveColorScheme().background)
+                .background(theme.resolveColorSeed().background)
                 .height(ThemeCardDefaults.CardHeight)
         ) {
             AnimatedVisibility(
@@ -97,7 +97,7 @@ fun ThemeCard(
                         .fillMaxSize()
                         .border(
                             ThemeCardDefaults.BorderWidth,
-                            theme.resolveColorScheme().onPrimaryContainer,
+                            theme.resolveColorSeed().onPrimaryContainer,
                             currentShape
                         )
                 ) {
@@ -109,7 +109,7 @@ fun ThemeCard(
                         Icon(
                             Icons.Default.CheckCircle,
                             "",
-                            tint = theme.resolveColorScheme().onPrimaryContainer
+                            tint = theme.resolveColorSeed().onPrimaryContainer
                         )
                     }
                 }
@@ -123,7 +123,7 @@ fun ThemeCard(
                         .fillMaxSize()
                         .border(
                             ThemeCardDefaults.BorderWidth,
-                            theme.resolveColorScheme().onPrimaryContainer,
+                            theme.resolveColorSeed().onPrimaryContainer,
                             currentShape
                         )
                 ) {
@@ -135,7 +135,7 @@ fun ThemeCard(
                         Icon(
                             Icons.Default.CheckCircle,
                             "",
-                            tint = theme.resolveColorScheme().onPrimaryContainer
+                            tint = theme.resolveColorSeed().onPrimaryContainer
                         )
                     }
                 }
@@ -149,7 +149,7 @@ fun ThemeCard(
                         .fillMaxSize()
                         .border(
                             ThemeCardDefaults.BorderWidth,
-                            theme.resolveColorScheme().onPrimaryContainer,
+                            theme.resolveColorSeed().onPrimaryContainer,
                             currentShape
                         )
                 ) {
@@ -161,7 +161,7 @@ fun ThemeCard(
                         Icon(
                             painterResource(R.drawable.dark_mode),
                             "",
-                            tint = theme.resolveColorScheme().onPrimaryContainer
+                            tint = theme.resolveColorSeed().onPrimaryContainer
                         )
                     }
                 }
@@ -175,7 +175,7 @@ fun ThemeCard(
                         horizontal = ThemeCardDefaults.TitleHorizontalPadding,
                         vertical = ThemeCardDefaults.TitleVerticalPadding
                     ),
-                theme.resolveColorScheme().onPrimaryContainer,
+                theme.resolveColorSeed().onPrimaryContainer,
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center
             )
@@ -188,7 +188,7 @@ fun ThemeCard(
                         .fillMaxSize()
                         .border(
                             ThemeCardDefaults.BorderWidth,
-                            theme.resolveColorScheme().onPrimaryContainer,
+                            theme.resolveColorSeed().onPrimaryContainer,
                             currentShape
                         )
                 ) {
@@ -200,7 +200,7 @@ fun ThemeCard(
                         Icon(
                             painterResource(R.drawable.light_mode),
                             "",
-                            tint = theme.resolveColorScheme().onPrimaryContainer
+                            tint = theme.resolveColorSeed().onPrimaryContainer
                         )
                     }
                 }
@@ -226,8 +226,8 @@ fun ThemeCard(
                                 bottom = ThemeCardDefaults.LightDarkOverlayPaddingInner
                             ),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = theme.resolveColorScheme().primary,
-                            contentColor = theme.resolveColorScheme().onPrimary
+                            containerColor = theme.resolveColorSeed().primary,
+                            contentColor = theme.resolveColorSeed().onPrimary
                         )
                     ) {
                         Text(stringResource(R.string.light))
@@ -247,8 +247,8 @@ fun ThemeCard(
                                 bottom = ThemeCardDefaults.LightDarkOverlayPaddingInner
                             ),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = theme.resolveColorScheme().primary,
-                            contentColor = theme.resolveColorScheme().onPrimary
+                            containerColor = theme.resolveColorSeed().primary,
+                            contentColor = theme.resolveColorSeed().onPrimary
                         )
                     ) {
                         Text(stringResource(R.string.dark))

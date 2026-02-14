@@ -87,11 +87,6 @@ android {
             variantBuilder.enable = false
         }
     }
-    
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
 
     buildFeatures {
         compose = true
@@ -166,6 +161,9 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)
     ksp(libs.hilt.compiler)
+
+    // Third-Party Library
+    implementation(libs.material.kolor)
 
     // Testing Libraries
     testImplementation(libs.junit)

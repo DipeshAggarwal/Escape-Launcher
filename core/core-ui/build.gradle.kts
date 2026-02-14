@@ -19,5 +19,7 @@ dependencies {
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.appcompat)
 
+    implementation(libs.material.kolor)
+
     implementation(project(":core:core-common"))
 }

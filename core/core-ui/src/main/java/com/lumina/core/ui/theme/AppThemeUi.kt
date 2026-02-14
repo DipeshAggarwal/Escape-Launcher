@@ -4,9 +4,11 @@ import com.lumina.core.common.AppTheme
 import com.lumina.core.ui.R
 
 fun AppTheme.displayNameRes(): Int = when(this) {
-    AppTheme.DARK -> R.string.dark
+    AppTheme.PURE_BLACK -> R.string.pure_black
+
     AppTheme.LIGHT -> R.string.light
-    AppTheme.PITCH_DARK -> R.string.pitch_black
+    AppTheme.WARM_LIGHT -> R.string.warm_light
+    AppTheme.COOL_DARK -> R.string.cool_dark
 
     AppTheme.LIGHT_RED -> R.string.light_red
     AppTheme.DARK_RED -> R.string.dark_red
@@ -20,6 +22,8 @@ fun AppTheme.displayNameRes(): Int = when(this) {
     AppTheme.LIGHT_YELLOW -> R.string.light_yellow
     AppTheme.DARK_YELLOW -> R.string.dark_yellow
 
-    AppTheme.OFF_LIGHT -> R.string.off_white
+    AppTheme.LIGHT_NEUTRAL -> R.string.light_neutral
+    AppTheme.DARK_NEUTRAL -> R.string.dark_neutral
+
     AppTheme.SYSTEM -> R.string.system
 }

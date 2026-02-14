@@ -30,7 +30,7 @@ import androidx.core.view.WindowInsetsControllerCompat
 import com.geecee.escapelauncher.HomeScreenModel
 import com.geecee.escapelauncher.R
 import com.geecee.escapelauncher.ui.theme.getFontFamily
-import com.lumina.core.ui.theme.EscapeTheme
+import com.lumina.core.ui.theme.RiktaTheme
 import com.geecee.escapelauncher.utils.managers.ScreenTimeManager
 import com.lumina.core.common.AppDefaults.DEFAULT_FONT
 import com.lumina.core.common.AppDefaults.DEFAULT_THEME
@@ -484,7 +484,7 @@ object AppUtils {
     }
 
     /**
-     * Sets up theme by retrieving theme that should be used and then passing it and the content into an EscapeTheme composable
+     * Sets up theme by retrieving theme that should be used and then passing it and the content into an RiktaTheme composable
      */
     @Composable
     fun SetUpTheme(content: @Composable () -> Unit, viewModel: MainAppModel) {
@@ -532,7 +532,7 @@ object AppUtils {
             }
         }
 
-        EscapeTheme(
+        RiktaTheme(
             theme = viewModel.appTheme.value,
             fontFamily = fontFamily
         ) {

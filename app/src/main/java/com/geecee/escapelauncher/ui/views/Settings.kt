@@ -41,6 +41,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -78,7 +79,6 @@ import com.geecee.escapelauncher.ui.composables.WeatherAppPicker
 import com.lumina.core.ui.theme.CardContainerColor
 import com.lumina.core.ui.theme.ContentColor
 import com.geecee.escapelauncher.ui.theme.getFontFamily
-import com.lumina.core.ui.theme.resolveColorScheme
 import com.geecee.escapelauncher.utils.AppUtils
 import com.geecee.escapelauncher.utils.AppUtils.loadTextFromAssets
 import com.geecee.escapelauncher.utils.CustomWidgetPicker
@@ -1015,7 +1015,7 @@ fun ThemeOptions(
                 })
         }
         item {
-            val backgroundColor = mainAppModel.appTheme.value.resolveColorScheme().background
+            val backgroundColor = MaterialTheme.colorScheme.background
             SettingsButton(
                 label = stringResource(R.string.match_system_wallpaper),
                 isBottomOfGroup = true,

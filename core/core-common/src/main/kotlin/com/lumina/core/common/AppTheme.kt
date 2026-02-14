@@ -1,9 +1,11 @@
 package com.lumina.core.common
 
 enum class AppTheme {
-    DARK,
+    PURE_BLACK,
+
     LIGHT,
-    PITCH_DARK,
+    WARM_LIGHT,
+    COOL_DARK,
 
     LIGHT_RED,
     DARK_RED,
@@ -17,6 +19,8 @@ enum class AppTheme {
     LIGHT_YELLOW,
     DARK_YELLOW,
 
-    OFF_LIGHT,
+    LIGHT_NEUTRAL,
+    DARK_NEUTRAL,
+
     SYSTEM
 }
