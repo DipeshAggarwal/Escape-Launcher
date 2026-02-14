@@ -230,7 +230,7 @@ fun ThemeCard(
                             contentColor = theme.resolveColorSeed().onPrimary
                         )
                     ) {
-                        Text(stringResource(R.string.light))
+                        Text(stringResource(R.string.light_mode))
                     }
 
                     Button(
@@ -251,7 +251,7 @@ fun ThemeCard(
                             contentColor = theme.resolveColorSeed().onPrimary
                         )
                     ) {
-                        Text(stringResource(R.string.dark))
+                        Text(stringResource(R.string.dark_mode))
                     }
                 }
             }

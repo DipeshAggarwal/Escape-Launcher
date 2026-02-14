@@ -29,4 +29,7 @@
     <string name="dark_neutral">Dark Neutral</string>
 
     <string name="system">System</string>
+
+    <string name="light_mode">Light Mode</string>
+    <string name="dark_mode">Dark Mode</string>
 </resources>

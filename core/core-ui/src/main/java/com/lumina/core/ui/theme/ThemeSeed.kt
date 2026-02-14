@@ -18,8 +18,9 @@ private fun Int.toComposeColor(): Color = Color(this)
  */
 data class ThemeSeed(
     val seedColor: Color,
-    val isDark: Boolean,
-    val isAmoled: Boolean = false
+    val isDark: Boolean = false,
+    val isAmoled: Boolean = false,
+    val isSystem: Boolean = false
 ) {
     val palette = CorePalette.of(seedColor.toArgb())
     val background get() = computeBackground()
@@ -132,7 +133,7 @@ fun AppTheme.resolveColorSeed(): ThemeSeed {
 
         AppTheme.SYSTEM -> ThemeSeed(
             seedColor = ColorSeedTokens.Blank,
-            isDark = true
+            isSystem = true
         )
     }
 }
