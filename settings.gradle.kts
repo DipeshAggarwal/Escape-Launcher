@@ -25,6 +25,9 @@ pluginManagement {
         id("com.google.dagger.hilt.android") version "2.59.1"
     }
 }
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+}
 
 dependencyResolutionManagement {
     @Suppress("UnstableApiUsage")
