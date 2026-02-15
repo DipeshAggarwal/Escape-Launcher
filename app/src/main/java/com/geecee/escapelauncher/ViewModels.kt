@@ -153,15 +153,15 @@ class HomeScreenModel @Inject constructor(
         }
     }
 
-    fun hideApp(packageName: String) {
+    fun addHiddenApp(packageName: String) {
         viewModelScope.launch {
-            hiddenAppsRepository.hideApp((packageName))
+            hiddenAppsRepository.addHiddenApp((packageName))
         }
     }
 
-    fun unhideApp(packageName: String) {
+    fun removeHiddenApp(packageName: String) {
         viewModelScope.launch {
-            hiddenAppsRepository.unhideApp(packageName)
+            hiddenAppsRepository.removeHiddenApp(packageName)
         }
     }
 

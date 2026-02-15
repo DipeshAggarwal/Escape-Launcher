@@ -1408,7 +1408,7 @@ fun HiddenApps(
                         // Remove from your list after a short delay to let animation run
                         coroutineScope.launch {
                             delay(500)
-                            viewModel.unhideApp(app.packageName)
+                            viewModel.removeHiddenApp(app.packageName)
                         }
                     },
                     isTopOfGroup = hiddenAppsList.firstOrNull() == app,

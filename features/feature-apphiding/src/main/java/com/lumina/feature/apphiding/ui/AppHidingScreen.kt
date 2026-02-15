@@ -26,9 +26,9 @@ fun AppHidingScreen(
         onBackClicked = onBack,
         onAppClicked = { app, selected ->
             if (selected) {
-                viewModel.unhideApp(app.packageName)
+                viewModel.removeHiddenApp(app.packageName)
             } else {
-                viewModel.hideApp(app.packageName)
+                viewModel.addHiddenApp(app.packageName)
             }
         })
 }

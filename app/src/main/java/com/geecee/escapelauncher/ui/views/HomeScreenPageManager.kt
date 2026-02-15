@@ -219,7 +219,7 @@ fun HomeScreenPageManager(
             AppAction(
                 label = stringResource(R.string.hide),
                 onClick = {
-                    homeScreenModel.hideApp(
+                    homeScreenModel.addHiddenApp(
                         homeScreenModel.currentSelectedApp.value.packageName
                     )
                     homeScreenModel.showBottomSheet.value = false

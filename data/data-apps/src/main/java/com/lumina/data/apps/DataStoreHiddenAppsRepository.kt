@@ -17,7 +17,7 @@ class DataStoreHiddenAppsRepository @Inject constructor(
 ): HiddenAppsRepository {
     private val hiddenAppsKey = stringSetPreferencesKey(HIDDEN_APPS_KEY)
 
-    override suspend fun hideApp(packageName: String) {
+    override suspend fun addHiddenApp(packageName: String) {
         dataStore.edit { prefs ->
             val currentHiddenApps = prefs[hiddenAppsKey] ?: emptySet()
             val updatedHiddenApps = currentHiddenApps + packageName
@@ -26,12 +26,18 @@ class DataStoreHiddenAppsRepository @Inject constructor(
         }
     }
 
-    override suspend fun unhideApp(packageName: String) {
+    override suspend fun removeHiddenApp(packageName: String) {
         dataStore.edit { prefs ->
             val currentHiddenApps = prefs[hiddenAppsKey] ?: emptySet()
             val updatedHiddenApps = currentHiddenApps - packageName
 
             prefs[hiddenAppsKey] = updatedHiddenApps
+        }
+    }
+
+    override suspend fun setHiddenApps(packageNames: List<String>) {
+        dataStore.edit { prefs ->
+            prefs[hiddenAppsKey] = packageNames.toSet()
         }
     }
 
