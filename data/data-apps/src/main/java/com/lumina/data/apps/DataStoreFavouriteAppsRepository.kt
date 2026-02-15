@@ -46,15 +46,9 @@ class DataStoreFavouriteAppsRepository @Inject constructor(
 
     }
 
-    override suspend fun removeFavouriteApps(packageNames: List<String>) {
-        if (packageNames.isEmpty()) return
-
+    override suspend fun setFavouriteApps(packageNames: List<String>) {
         dataStore.edit { prefs ->
-            val currentFavourites = prefs[favouriteAppsKey]?.split(DELIMITER)
-                ?: return@edit
-
-            val updatedFavourites = currentFavourites.filterNot { it in packageNames }
-            prefs[favouriteAppsKey] = updatedFavourites.joinToString(separator=DELIMITER)
+            prefs[favouriteAppsKey] = packageNames.distinct().joinToString(separator=DELIMITER)
         }
     }
 

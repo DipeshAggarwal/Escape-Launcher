@@ -10,6 +10,7 @@ import com.lumina.domain.apps.InstalledAppsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -24,23 +25,6 @@ class AppFavouriteViewModel @Inject constructor(
     private val favouriteAppsRepository: FavouriteAppsRepository,
     private val installedAppsRepository: InstalledAppsRepository
 ): ViewModel() {
-    init {
-        viewModelScope.launch {
-            favouriteAppsRepository.allFavouriteApps()
-                .distinctUntilChanged()
-                .collect { packageNames ->
-                val installedPackages = installedAppsRepository
-                    .getInstalledApps()
-                    .map { it.packageName }
-                    .toSet()
-
-                val uninstalledPackages = packageNames.filterNot { it in installedPackages }
-                if (uninstalledPackages.isNotEmpty()) {
-                    favouriteAppsRepository.removeFavouriteApps(uninstalledPackages)
-                }
-            }
-        }
-    }
     val installedApps: StateFlow<List<AppInfo>> = flow {
         emit(installedAppsRepository.getInstalledApps())
     }.stateIn(
@@ -64,6 +48,25 @@ class AppFavouriteViewModel @Inject constructor(
             SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMillis),
             emptyList()
         )
+
+    init {
+        viewModelScope.launch {
+            combine(
+                favouriteAppsRepository.allFavouriteApps(),
+                installedApps
+            ) { favouritePackages, installedPackages ->
+                val installedPackagesSet = installedPackages.map { it.packageName }.toSet()
+                val cleanedFavouritePackages = favouritePackages.filter { it in installedPackagesSet }
+
+                Pair(favouritePackages, cleanedFavouritePackages)
+            }
+            .distinctUntilChanged()
+            .collect { (favouritePackages, cleanedFavouritePackages) ->
+                if (favouritePackages == cleanedFavouritePackages) return@collect
+                favouriteAppsRepository.setFavouriteApps(cleanedFavouritePackages)
+            }
+        }
+    }
 
     fun addFavouriteApp(packageName: String) {
         viewModelScope.launch {
