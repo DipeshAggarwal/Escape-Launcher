@@ -21,7 +21,7 @@ class DataStoreFavouriteAppsRepository @Inject constructor(
     private val favouriteAppsKey = stringPreferencesKey(FAVOURITE_APPS_KEY)
     private val TAG = this::class.java.simpleName
 
-    override suspend fun addFavourite(packageName: String) {
+    override suspend fun addFavouriteApp(packageName: String) {
         dataStore.edit { prefs ->
             val currentFavourites = prefs[favouriteAppsKey]?.split(DELIMITER)
                 ?.toMutableList()
@@ -34,7 +34,7 @@ class DataStoreFavouriteAppsRepository @Inject constructor(
         }
     }
 
-    override suspend fun removeFavourite(packageName: String) {
+    override suspend fun removeFavouriteApp(packageName: String) {
         dataStore.edit { prefs ->
             val currentFavourites = prefs[favouriteAppsKey]?.split(DELIMITER)
                 ?.toMutableList()
@@ -48,7 +48,7 @@ class DataStoreFavouriteAppsRepository @Inject constructor(
 
     }
 
-    override suspend fun reorderFavourites(fromIndex: Int, toIndex: Int) {
+    override suspend fun reorderFavouriteApps(fromIndex: Int, toIndex: Int) {
         dataStore.edit { prefs ->
             val currentFavourites = prefs[favouriteAppsKey]?.split(DELIMITER)
                 ?.toMutableList()
@@ -65,7 +65,7 @@ class DataStoreFavouriteAppsRepository @Inject constructor(
         }
     }
 
-    override fun allFavourites(): Flow<List<String>> {
+    override fun allFavouriteApps(): Flow<List<String>> {
         return dataStore.data.map { prefs ->
             prefs[favouriteAppsKey]?.split(DELIMITER)?.filter { it.isNotEmpty() }
                 ?: emptyList()

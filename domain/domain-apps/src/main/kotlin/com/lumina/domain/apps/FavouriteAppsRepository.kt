@@ -3,9 +3,9 @@ package com.lumina.domain.apps
 import kotlinx.coroutines.flow.Flow
 
 interface FavouriteAppsRepository {
-    suspend fun addFavourite(packageName: String)
-    suspend fun removeFavourite(packageName: String)
-    suspend fun reorderFavourites(fromIndex: Int, toIndex: Int)
+    suspend fun addFavouriteApp(packageName: String)
+    suspend fun removeFavouriteApp(packageName: String)
+    suspend fun reorderFavouriteApps(fromIndex: Int, toIndex: Int)
 
-    fun allFavourites(): Flow<List<String>>
+    fun allFavouriteApps(): Flow<List<String>>
 }
