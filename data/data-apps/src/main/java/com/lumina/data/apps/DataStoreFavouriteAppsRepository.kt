@@ -24,8 +24,7 @@ class DataStoreFavouriteAppsRepository @Inject constructor(
     override suspend fun addFavouriteApp(packageName: String) {
         dataStore.edit { prefs ->
             val currentFavourites = prefs[favouriteAppsKey]?.split(DELIMITER)
-                ?.toMutableList()
-                ?: mutableListOf()
+                ?: emptyList()
 
             if (!currentFavourites.contains(packageName)) {
                 val updatedFavourites = currentFavourites + packageName
@@ -37,7 +36,6 @@ class DataStoreFavouriteAppsRepository @Inject constructor(
     override suspend fun removeFavouriteApp(packageName: String) {
         dataStore.edit { prefs ->
             val currentFavourites = prefs[favouriteAppsKey]?.split(DELIMITER)
-                ?.toMutableList()
                 ?: return@edit
 
             if (currentFavourites.contains(packageName)) {
@@ -46,6 +44,18 @@ class DataStoreFavouriteAppsRepository @Inject constructor(
             }
         }
 
+    }
+
+    override suspend fun removeFavouriteApps(packageNames: List<String>) {
+        if (packageNames.isEmpty()) return
+
+        dataStore.edit { prefs ->
+            val currentFavourites = prefs[favouriteAppsKey]?.split(DELIMITER)
+                ?: return@edit
+
+            val updatedFavourites = currentFavourites.filterNot { it in packageNames }
+            prefs[favouriteAppsKey] = updatedFavourites.joinToString(separator=DELIMITER)
+        }
     }
 
     override suspend fun reorderFavouriteApps(fromIndex: Int, toIndex: Int) {

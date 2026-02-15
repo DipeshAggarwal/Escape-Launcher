@@ -68,6 +68,7 @@ include(":data:data-settings")
 // features module
 include(":features:feature-apphiding")
 include(":features:feature-apppicker")
+include(":features:feature-appfavourite")
 include(":features:feature-home")
 include(":features:feature-onboarding")
 include(":features:feature-screentime")
