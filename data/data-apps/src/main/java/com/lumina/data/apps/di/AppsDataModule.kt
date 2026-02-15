@@ -13,5 +13,7 @@ import javax.inject.Singleton
 abstract class HiddenAppsDataModule {
     @Binds
     @Singleton
-    abstract fun bindsHiddenDataStore(hiddenAppsRepository: DataStoreHiddenAppsRepository): HiddenAppsRepository
+    abstract fun bindsHiddenRepository(
+        hiddenAppsRepository: DataStoreHiddenAppsRepository
+    ): HiddenAppsRepository
 }

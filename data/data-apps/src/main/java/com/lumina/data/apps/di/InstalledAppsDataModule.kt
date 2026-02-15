@@ -13,7 +13,7 @@ import javax.inject.Singleton
 abstract class InstalledAppsDataModule {
     @Binds
     @Singleton
-    abstract fun bindInstalledAppsDataModule(
+    abstract fun bindInstalledAppsRepository(
         installedAppsRepository: PackageManagerInstalledAppsRepository
     ): InstalledAppsRepository
 }

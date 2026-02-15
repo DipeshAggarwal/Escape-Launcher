@@ -10,10 +10,10 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class FavouriteAppsModule {
+abstract class FavouriteAppsDataModule {
     @Binds
     @Singleton
-    abstract fun bindsFavouriteAppsModule(
+    abstract fun bindsFavouriteRepository(
         favouriteAppsRepository: DataStoreFavouriteAppsRepository
     ): FavouriteAppsRepository
 }
