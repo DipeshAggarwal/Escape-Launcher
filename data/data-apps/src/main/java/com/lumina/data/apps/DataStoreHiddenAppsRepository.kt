@@ -10,7 +10,9 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class DataStoreHiddenAppsRepository @Inject constructor(private val dataStore: DataStore<Preferences>): HiddenAppsRepository {
+class DataStoreHiddenAppsRepository @Inject constructor(
+    private val dataStore: DataStore<Preferences>
+): HiddenAppsRepository {
     private val hiddenAppsKey = stringSetPreferencesKey("hidden_apps")
 
     override suspend fun hideApp(packageName: String) {
