@@ -31,11 +31,6 @@ class DataStoreHiddenAppsRepository @Inject constructor(private val dataStore: D
         }
     }
 
-    override suspend fun isAppHidden(packageName: String): Boolean {
-        val currentHiddenApps = dataStore.data.first()[hiddenAppsKey] ?: emptySet()
-        return packageName in currentHiddenApps
-    }
-
     override fun allHiddenApps(): Flow<Set<String>> {
         return dataStore.data.map { prefs -> prefs[hiddenAppsKey] ?: emptySet() }
     }
