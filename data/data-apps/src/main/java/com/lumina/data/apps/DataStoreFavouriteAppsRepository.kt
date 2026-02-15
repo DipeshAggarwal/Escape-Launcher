@@ -65,7 +65,8 @@ class DataStoreFavouriteAppsRepository @Inject constructor(
                 ?: return@edit
 
             if (fromIndex in currentFavourites.indices && toIndex in currentFavourites.indices) {
-                Collections.swap(currentFavourites, fromIndex, toIndex)
+                val selectedApp = currentFavourites.removeAt(fromIndex)
+                currentFavourites.add(toIndex, selectedApp)
                 prefs[favouriteAppsKey] = currentFavourites.joinToString(DELIMITER)
             } else {
                 logger.w(TAG,
